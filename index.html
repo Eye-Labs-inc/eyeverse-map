@@ -1,0 +1,2072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eyeverse World Map</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Terrain Visualizer specific overrides */
+        body {
+            background: var(--bg-tertiary);
+        }
+        
+        .tooltip a {
+            color: #87CEEB !important;
+            text-decoration: underline !important;
+            pointer-events: auto !important;
+        }
+        
+        .tooltip a:hover {
+            color: #ADD8E6 !important;
+        }
+        
+        .controls {
+            padding: var(--spacing-sm) var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+            width: 100%;
+        }
+        
+        select, input[type="range"], button {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-sm);
+            background: var(--surface-primary);
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+        
+        /* Use viz-btn from main styles.css */
+        
+        /* Use legend styles from main styles.css */
+        
+        .legend-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-sm);
+            align-items: flex-start;
+        }
+        
+        button {
+            background: var(--primary-color);
+            color: white;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+        }
+        
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            background: #666;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+        
+        /* Use canvas-container from main styles.css */
+        
+        canvas {
+            width: 100%;
+            height: auto;
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+        }
+        
+        .canvas-container {
+            overflow: hidden;
+        }
+        
+        /* Map Controls Overlay */
+        .map-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 10;
+        }
+        
+        .pan-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .pan-row {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .zoom-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .zoom-row {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .zoom-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.95);
+            border: 3px solid #dc2626;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            backdrop-filter: blur(15px);
+        }
+        
+        .zoom-btn:hover {
+            background: #dc2626;
+            border-color: #b91c1c;
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        .zoom-btn .icon {
+            font-size: 18px;
+            font-weight: bold;
+            color: #dc2626;
+        }
+        
+        .zoom-btn:hover .icon {
+            color: white;
+        }
+        
+        .zoom-btn.reset {
+            background: rgba(255, 255, 255, 0.95);
+            border: 3px solid #dc2626;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            width: 40px;
+            height: 40px;
+        }
+        
+        .zoom-btn.reset:hover {
+            background: #dc2626;
+            border-color: #b91c1c;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+            transform: scale(1.1);
+        }
+        
+        .zoom-btn.reset .icon {
+            color: #dc2626;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .zoom-btn.reset:hover .icon {
+            color: white;
+        }
+        
+        .pan-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.95);
+            border: 3px solid #dc2626;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            backdrop-filter: blur(15px);
+        }
+        
+        .pan-btn:hover {
+            background: #dc2626;
+            border-color: #b91c1c;
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        .pan-btn .icon {
+            font-size: 18px;
+            font-weight: bold;
+            color: #dc2626;
+        }
+        
+        .pan-btn:hover .icon {
+            color: white;
+        }
+        
+        .info-panel {
+            background: var(--surface-primary);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            margin-top: var(--spacing-lg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-primary);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-md);
+        }
+        
+        .stat-item {
+            background: var(--surface-secondary);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-sm);
+            text-align: center;
+            border: 1px solid var(--border-secondary);
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: var(--spacing-xxl);
+            font-size: 18px;
+        }
+        
+        /* Use error styles from main styles.css */
+        
+        /* Use tooltip styles from main styles.css */
+    </style>
+</head>
+<body>
+    <nav class="navigation">
+        <div class="nav-container">
+            <a href="index.html" class="nav-title">Eyeverse World Map</a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link active">🗺️ 2D View</a>
+                <a href="3d-terrain-preview.html" class="nav-link">🌄 3D View</a>
+                <a href="data-explorer.html" class="nav-link">📊 Data Explorer</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="content">
+        <div class="container">
+        <div class="controls">
+            <div class="viz-buttons">
+                <button class="viz-btn active" data-mode="map" onclick="setVizMode('map')">
+                    <span class="icon">🗺️</span> Map
+                </button>
+                <button class="viz-btn" data-mode="states" onclick="setVizMode('states')">
+                    <span class="icon">🏛️</span> Regions
+                </button>
+                <button class="viz-btn" data-mode="cultures" onclick="setVizMode('cultures')">
+                    <span class="icon">👥</span> Cultures
+                </button>
+                <button class="viz-btn" data-mode="religions" onclick="setVizMode('religions')">
+                    <span class="icon">⛪</span> Beliefs
+                </button>
+                <button class="viz-btn" data-mode="biomes" onclick="setVizMode('biomes')">
+                    <span class="icon">🌲</span> Biomes
+                </button>
+                <button class="viz-btn" data-mode="settlements" onclick="setVizMode('settlements')">
+                    <span class="icon">🏘️</span> Settlements
+                </button>
+                <button class="viz-btn" data-mode="markers" onclick="setVizMode('markers')">
+                    <span class="icon">📍</span> Markers
+                </button>
+                <button class="viz-btn" data-mode="rivers" onclick="setVizMode('rivers')">
+                    <span class="icon">🌊</span> Rivers
+                </button>
+                <button class="viz-btn" data-mode="routes" onclick="setVizMode('routes')">
+                    <span class="icon">🛤️</span> Trade Routes
+                </button>
+            </div>
+            </div>
+            
+            </div>
+            
+        <div id="legend" class="legend">
+            <div id="legendContent"></div>
+        </div>
+        
+        <div class="canvas-container">
+        <div id="loading" class="loading">
+            <div>🔄 Loading terrain data...</div>
+                <div>Please wait while we load the elevation data</div>
+        </div>
+        <div id="error" class="error" style="display: none;"></div>
+            <canvas id="terrainCanvas" style="display: none;"></canvas>
+            
+            <!-- Map Controls Overlay -->
+            <div id="mapControls" class="map-controls" style="display: none;">
+                <!-- Pan Controls -->
+                <div class="pan-controls">
+                    <button class="pan-btn" onclick="panUp()" title="Pan up">
+                        <span class="icon">↑</span>
+                    </button>
+                    <div class="pan-row">
+                        <button class="pan-btn" onclick="panLeft()" title="Pan left">
+                            <span class="icon">←</span>
+                        </button>
+                        <button class="pan-btn" onclick="panRight()" title="Pan right">
+                            <span class="icon">→</span>
+                        </button>
+                        </div>
+                    <button class="pan-btn" onclick="panDown()" title="Pan down">
+                        <span class="icon">↓</span>
+                    </button>
+                        </div>
+                
+                <!-- Zoom Controls -->
+                <div class="zoom-controls">
+                    <div class="zoom-row">
+                        <button class="zoom-btn" onclick="zoomIn()" title="Zoom In">
+                            <span class="icon">+</span>
+                        </button>
+                        <button class="zoom-btn" onclick="zoomOut()" title="Zoom Out">
+                            <span class="icon">−</span>
+                        </button>
+                        </div>
+                    <button class="zoom-btn reset" onclick="resetZoom()" title="Reset Zoom">
+                        <span class="icon">R</span>
+                    </button>
+                        </div>
+                    </div>
+                </div>
+                
+                        </div>
+                        </div>
+
+    <script>
+        let terrainData = null;
+        let metadata = null;
+        let canvas = null;
+        let ctx = null;
+        let currentVizMode = 'map';
+        let currentSettlements = null;
+        let hoveredSettlement = null;
+        let currentPolygonData = null;
+        let hoveredPolygon = null;
+        let markersData = null;
+        let tooltipHideTimeout = null;
+        let currentMarkers = null;
+        
+        // Zoom and pan state
+        let zoom = 1.0;
+        let panX = 0;
+        let panY = 0;
+        let isZooming = false;
+        
+        // Helper function to apply zoom and pan transformations
+        function applyTransform(x, y) {
+            return {
+                x: (x - panX) / zoom,
+                y: (y - panY) / zoom
+            };
+        }
+        
+        // Helper function to apply inverse transformation (for mouse coordinates)
+        function applyInverseTransform(x, y) {
+            return {
+                x: x * zoom + panX,
+                y: y * zoom + panY
+            };
+        }
+        
+        // Set visualization mode from button clicks
+        function setVizMode(mode) {
+            currentVizMode = mode;
+            
+            // Clear data when switching modes
+            if (mode !== 'settlements') {
+                currentSettlements = null;
+            }
+            if (!['states', 'cultures', 'religions', 'biomes'].includes(mode)) {
+                currentPolygonData = null;
+            }
+            hideTooltip();
+            
+            // Update button states
+            document.querySelectorAll('.viz-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-mode="${mode}"]`).classList.add('active');
+            
+            // Load the visualization
+            loadVisualization();
+        }
+        
+        // Handle mouse movement for hover
+        function handleMouseMove(event) {
+            const rect = canvas.getBoundingClientRect();
+            
+            
+            // Scale mouse coordinates to match internal canvas dimensions
+            const scaleX = canvas.width / rect.width;
+            const scaleY = canvas.height / rect.height;
+            const x = (event.clientX - rect.left) * scaleX;
+            const y = (event.clientY - rect.top) * scaleY;
+            
+            // Handle markers
+            if (currentVizMode === 'markers' && currentMarkers) {
+                const marker = findMarkerAt(x, y);
+                
+                if (marker && marker !== hoveredPolygon) {
+                    hoveredPolygon = marker;
+                    hoveredSettlement = null; // Clear settlement hover
+                    showMarkerTooltip(event, marker, x, y);
+                } else if (!marker && hoveredPolygon) {
+                    hoveredPolygon = null;
+                    hoveredSettlement = null;
+                    hideTooltip(1000); // 1 second delay for all marker tooltips
+                }
+            }
+            // Handle settlements
+            else if (currentVizMode === 'settlements' && currentSettlements) {
+                const settlement = findSettlementAt(x, y);
+                
+                if (settlement && settlement !== hoveredSettlement) {
+                    hoveredSettlement = settlement;
+                    hoveredPolygon = null; // Clear polygon hover
+                    showSettlementTooltip(event, settlement, x, y);
+                } else if (!settlement && hoveredSettlement) {
+                    hoveredSettlement = null;
+                    hideTooltip();
+                }
+            }
+            // Handle polygon layers
+            else if (['states', 'cultures', 'religions', 'biomes'].includes(currentVizMode) && currentPolygonData) {
+                const polygon = findPolygonAt(x, y);
+                
+                if (polygon && polygon !== hoveredPolygon) {
+                    hoveredPolygon = polygon;
+                    hoveredSettlement = null; // Clear settlement hover
+                    showPolygonTooltip(event, polygon, x, y);
+                } else if (!polygon && hoveredPolygon) {
+                    hoveredPolygon = null;
+                    hideTooltip();
+                }
+            }
+        }
+        
+        // Handle mouse leave
+        function handleMouseLeave() {
+            if (hoveredSettlement) {
+                hoveredSettlement = null;
+                hideTooltip();
+            }
+            if (hoveredPolygon) {
+                hoveredPolygon = null;
+                hideTooltip();
+            }
+            // Also clear any marker hover state
+            if (currentMarkers && currentVizMode === 'markers') {
+                hoveredPolygon = null;
+                hideTooltip();
+            }
+        }
+        
+        
+        // Apply boundary constraints to keep map within visible area
+        function applyBoundaryConstraints() {
+            const containerRect = canvas.parentElement.getBoundingClientRect();
+            
+            // Calculate how much the zoomed canvas extends beyond the container
+            const scaledWidth = canvas.width * zoom;
+            const scaledHeight = canvas.height * zoom;
+            
+            // Calculate maximum pan distances to keep canvas within container
+            const maxPanX = Math.max(0, (scaledWidth - containerRect.width) / 2);
+            const maxPanY = Math.max(0, (scaledHeight - containerRect.height) / 2);
+            
+            // Constrain pan values to keep map within bounds
+            panX = Math.max(-maxPanX, Math.min(maxPanX, panX));
+            panY = Math.max(-maxPanY, Math.min(maxPanY, panY));
+        }
+        
+        // Update pan button states based on zoom level
+        function updatePanButtonStates() {
+            const panButtons = document.querySelectorAll('.pan-btn');
+            const isDisabled = zoom <= 1.0;
+            
+            panButtons.forEach(button => {
+                if (isDisabled) {
+                    button.style.cursor = 'not-allowed';
+                    button.style.pointerEvents = 'none';
+                } else {
+                    button.style.cursor = 'pointer';
+                    button.style.pointerEvents = 'auto';
+                }
+            });
+        }
+        
+        // Reset zoom and pan
+        function resetZoom() {
+            zoom = 1.0;
+            panX = 0;
+            panY = 0;
+            loadVisualization();
+            updatePanButtonStates();
+        }
+        
+        function zoomIn() {
+            const zoomFactor = 1.2;
+            const newZoom = Math.max(1.0, Math.min(5.0, zoom * zoomFactor));
+            
+            // Zoom towards center of canvas
+            const canvasCenterX = canvas.width / 2;
+            const canvasCenterY = canvas.height / 2;
+            const zoomRatio = newZoom / zoom;
+            
+            panX = canvasCenterX - (canvasCenterX - panX) * zoomRatio;
+            panY = canvasCenterY - (canvasCenterY - panY) * zoomRatio;
+            zoom = newZoom;
+            
+            // Apply boundary constraints after zoom
+            applyBoundaryConstraints();
+            
+            loadVisualization();
+            updatePanButtonStates();
+        }
+        
+        function zoomOut() {
+            const zoomFactor = 0.8;
+            const newZoom = Math.max(1.0, Math.min(5.0, zoom * zoomFactor));
+            
+            // Zoom towards center of canvas
+            const canvasCenterX = canvas.width / 2;
+            const canvasCenterY = canvas.height / 2;
+            const zoomRatio = newZoom / zoom;
+            
+            panX = canvasCenterX - (canvasCenterX - panX) * zoomRatio;
+            panY = canvasCenterY - (canvasCenterY - panY) * zoomRatio;
+            zoom = newZoom;
+            
+            // Apply boundary constraints after zoom
+            applyBoundaryConstraints();
+            
+            loadVisualization();
+            updatePanButtonStates();
+        }
+        
+        function panUp() {
+            if (zoom <= 1.0) return; // Don't pan when fully zoomed out
+            
+            panY += 50;
+            applyBoundaryConstraints(); // Apply boundaries after pan
+            loadVisualization();
+        }
+        
+        function panDown() {
+            if (zoom <= 1.0) return; // Don't pan when fully zoomed out
+            
+            panY -= 50;
+            applyBoundaryConstraints(); // Apply boundaries after pan
+            loadVisualization();
+        }
+        
+        function panLeft() {
+            if (zoom <= 1.0) return; // Don't pan when fully zoomed out
+            
+            panX += 50;
+            applyBoundaryConstraints(); // Apply boundaries after pan
+            loadVisualization();
+        }
+        
+        function panRight() {
+            if (zoom <= 1.0) return; // Don't pan when fully zoomed out
+            
+            panX -= 50;
+            applyBoundaryConstraints(); // Apply boundaries after pan
+            loadVisualization();
+        }
+        
+        // Find settlement at given canvas coordinates
+        function findSettlementAt(canvasX, canvasY) {
+            for (const settlement of currentSettlements) {
+                // Convert settlement coordinates to canvas coordinates
+                // Settlement range: longitude -70.23 to +70.05, latitude -36.24 to +37.09
+                let x = ((settlement.lon + 70.23) / 140.28) * canvas.width; // Map -70.23 to +70.05 longitude to canvas width
+                let y = ((37.09 - settlement.lat) / 73.33) * canvas.height; // Map -36.24 to +37.09 latitude to canvas height (flipped)
+                
+                // Apply zoom and pan transformation
+                const transformed = applyInverseTransform(x, y);
+                x = transformed.x;
+                y = transformed.y;
+                
+                // Calculate radius based on settlement type and population
+                const isCapital = settlement.capital;
+                const radius = isCapital ? 
+                    Math.max(6, Math.log10(settlement.population || 1000) * 2.5) :
+                    Math.max(3, Math.log10(settlement.population || 1000) * 1.5);
+                
+                // Check if mouse is within settlement circle
+                const distance = Math.sqrt((canvasX - x) ** 2 + (canvasY - y) ** 2);
+                if (distance <= radius + 5) { // Add 5px tolerance
+                    return settlement;
+                }
+            }
+            return null;
+        }
+
+        // Find marker at given canvas coordinates
+        function findMarkerAt(canvasX, canvasY) {
+            if (!currentMarkers) return null;
+            
+            for (const marker of currentMarkers) {
+                const lon = marker.geometry.coordinates[0];
+                const lat = marker.geometry.coordinates[1];
+                
+                // Convert geographic coordinates to canvas coordinates
+                // Marker range: longitude -164.92 to +165.74, latitude -89.80 to +86.82
+                let x = ((lon + 164.92) / 330.66) * canvas.width;
+                let y = ((86.82 - lat) / 176.62) * canvas.height;
+                
+                // Apply zoom and pan transformation
+                const transformed = applyInverseTransform(x, y);
+                x = transformed.x;
+                y = transformed.y;
+                
+                // Check if mouse is within marker radius
+                const distance = Math.sqrt((canvasX - x) ** 2 + (canvasY - y) ** 2);
+                
+                if (distance <= 12) { // Marker radius is 12px
+                    return marker;
+                }
+            }
+            return null;
+        }
+        
+        // Find polygon at given canvas coordinates using point-in-polygon algorithm
+        function findPolygonAt(canvasX, canvasY) {
+            if (!currentPolygonData || !currentPolygonData.features) {
+                return null;
+            }
+            
+            for (const feature of currentPolygonData.features) {
+                let coordinates = [];
+                
+                if (feature.geometry.type === 'Polygon') {
+                    coordinates = feature.geometry.coordinates[0]; // Exterior ring
+                } else if (feature.geometry.type === 'MultiPolygon') {
+                    // Check all polygons in MultiPolygon
+                    for (const polygon of feature.geometry.coordinates) {
+                        coordinates = polygon[0]; // Exterior ring
+                        if (pointInPolygon(canvasX, canvasY, coordinates)) {
+                            return { feature, properties: feature.properties };
+                        }
+                    }
+                    continue; // Skip the single coordinate check below for MultiPolygon
+                }
+                
+                if (pointInPolygon(canvasX, canvasY, coordinates)) {
+                    return { feature, properties: feature.properties };
+                }
+            }
+            return null;
+        }
+        
+        // Point-in-polygon algorithm
+        function pointInPolygon(x, y, coordinates, layerType = 'polygon') {
+            let inside = false;
+            
+            for (let i = 0, j = coordinates.length - 1; i < coordinates.length; j = i++) {
+                const xi = coordinates[i][0];
+                const yi = coordinates[i][1];
+                const xj = coordinates[j][0];
+                const yj = coordinates[j][1];
+                
+                // Convert lat/lng to canvas coordinates (using appropriate ranges for layer type)
+                let canvasXi, canvasYi, canvasXj, canvasYj;
+                
+                if (layerType === 'rivers') {
+                    // Rivers coordinate range: longitude -169.00 to +169.00, latitude -90.00 to +80.48
+                    canvasXi = ((xi + 169.00) / 338.00) * canvas.width;
+                    canvasYi = ((80.48 - yi) / 170.48) * canvas.height;
+                    canvasXj = ((xj + 169.00) / 338.00) * canvas.width;
+                    canvasYj = ((80.48 - yj) / 170.48) * canvas.height;
+                } else if (layerType === 'routes') {
+                    // Trade routes coordinate range: longitude -168.84 to +168.50, latitude -87.20 to +90.00
+                    canvasXi = ((xi + 168.84) / 337.34) * canvas.width;
+                    canvasYi = ((90.00 - yi) / 177.20) * canvas.height;
+                    canvasXj = ((xj + 168.84) / 337.34) * canvas.width;
+                    canvasYj = ((90.00 - yj) / 177.20) * canvas.height;
+                } else {
+                    // Polygon layers coordinate range: longitude -171.41 to +171.01, latitude -92.21 to +92.41
+                    canvasXi = ((xi + 171.41) / 342.42) * canvas.width;
+                    canvasYi = ((92.41 - yi) / 184.62) * canvas.height;
+                    canvasXj = ((xj + 171.41) / 342.42) * canvas.width;
+                    canvasYj = ((92.41 - yj) / 184.62) * canvas.height;
+                }
+                
+                // Apply zoom and pan transformation
+                const transformedI = applyInverseTransform(canvasXi, canvasYi);
+                const transformedJ = applyInverseTransform(canvasXj, canvasYj);
+                canvasXi = transformedI.x;
+                canvasYi = transformedI.y;
+                canvasXj = transformedJ.x;
+                canvasYj = transformedJ.y;
+                
+                if (((canvasYi > y) !== (canvasYj > y)) && 
+                    (x < (canvasXj - canvasXi) * (y - canvasYi) / (canvasYj - canvasYi) + canvasXi)) {
+                    inside = !inside;
+                }
+            }
+            
+            return inside;
+        }
+        
+        // Show tooltip for settlement
+        function showSettlementTooltip(event, settlement, scaledX, scaledY) {
+            hideTooltip(); // Remove any existing tooltip
+            
+            const tooltip = document.createElement('div');
+            tooltip.id = 'settlementTooltip';
+            tooltip.className = 'settlement-tooltip';
+            tooltip.innerHTML = `
+                <div class="tooltip-name">${settlement.name}</div>
+                <div class="tooltip-details">
+                    ${settlement.capital ? '<span class="capital-badge">Capital</span>' : ''}
+                    <span class="population">Population: ${settlement.population?.toLocaleString() || 'Unknown'}</span>
+                        </div>
+            `;
+            
+            document.body.appendChild(tooltip);
+            
+            // Position tooltip using original mouse coordinates (no conversion needed)
+            const x = event.clientX + 10;
+            const y = event.clientY - 10;
+            
+            tooltip.style.left = `${x}px`;
+            tooltip.style.top = `${y}px`;
+        }
+        
+        // Show tooltip for marker
+        function showMarkerTooltip(event, marker, canvasX, canvasY) {
+            // Remove existing tooltips and clear any pending hide timeout
+            hideTooltip();
+            
+            const tooltip = document.createElement('div');
+            tooltip.className = 'tooltip';
+            tooltip.style.position = 'fixed';
+            tooltip.style.background = 'rgba(0, 0, 0, 0.9)';
+            tooltip.style.color = 'white';
+            tooltip.style.padding = '8px 12px';
+            tooltip.style.borderRadius = '4px';
+            tooltip.style.fontSize = '12px';
+            tooltip.style.zIndex = '1000';
+            tooltip.style.pointerEvents = 'none';
+            tooltip.style.maxWidth = '300px';
+            tooltip.style.wordWrap = 'break-word';
+            
+            const icon = marker.properties.icon || '📍';
+            const name = marker.properties.name || 'Unknown Site';
+            const legend = marker.properties.legend || '';
+            
+            let content = `<div><strong>${icon} ${name}</strong></div>`;
+            
+            if (legend) {
+                // Clean up HTML in legend and limit length
+                let cleanLegend = legend
+                    .replace(/<[^>]*>/g, '') // Remove HTML tags
+                    .replace(/&nbsp;/g, ' ') // Replace HTML entities
+                    .replace(/&amp;/g, '&')
+                    .replace(/&lt;/g, '<')
+                    .replace(/&gt;/g, '>')
+                    .replace(/&quot;/g, '"')
+                    .replace(/&#39;/g, "'")
+                    .replace(/\s+/g, ' ') // Replace multiple spaces with single space
+                    .trim(); // Remove leading/trailing whitespace
+                
+                // For dungeons, remove the "See One page dungeon" text
+                if (marker.properties.type === 'dungeons') {
+                    cleanLegend = cleanLegend.replace(/Undiscovered dungeon\. See One page dungeon.*$/i, 'Undiscovered dungeon.');
+                }
+                
+                // Limit length and add ellipsis if needed
+                const maxLength = 200;
+                if (cleanLegend.length > maxLength) {
+                    cleanLegend = cleanLegend.substring(0, maxLength) + '...';
+                }
+                
+                if (cleanLegend.length > 0) {
+                    content += `<div>${cleanLegend}</div>`;
+                }
+            }
+            
+            tooltip.innerHTML = content;
+            document.body.appendChild(tooltip);
+            
+            // Position tooltip
+            const x = event.clientX + 10;
+            const y = event.clientY - 10;
+            tooltip.style.left = `${x}px`;
+            tooltip.style.top = `${y}px`;
+            
+        }
+
+        // Show tooltip for polygon
+        function showPolygonTooltip(event, polygon, scaledX, scaledY) {
+            hideTooltip(); // Remove any existing tooltip
+            
+            const tooltip = document.createElement('div');
+            tooltip.id = 'polygonTooltip';
+            tooltip.className = 'polygon-tooltip';
+            
+            // Get the appropriate name based on layer type
+            let name = '';
+            let layerType = '';
+            
+            switch (currentVizMode) {
+                case 'states':
+                    name = polygon.properties.State || 'Unknown State';
+                    layerType = 'Regions';
+                    break;
+                case 'cultures':
+                    name = polygon.properties.Name || 'Unknown Culture';
+                    layerType = 'Cultures';
+                    break;
+                case 'religions':
+                    name = polygon.properties.Name || 'Unknown Belief';
+                    layerType = 'Beliefs';
+                    break;
+                case 'biomes':
+                    name = polygon.properties.Biome || 'Unknown Biome';
+                    layerType = 'Biomes';
+                    break;
+            }
+            
+            tooltip.innerHTML = `
+                <div class="tooltip-name">${name}</div>
+                <div class="tooltip-details">
+                    <span class="layer-type">${layerType}</span>
+                        </div>
+            `;
+            
+            document.body.appendChild(tooltip);
+            
+            // Position tooltip using original mouse coordinates (no conversion needed)
+            const x = event.clientX + 10;
+            const y = event.clientY - 10;
+            
+            tooltip.style.left = `${x}px`;
+            tooltip.style.top = `${y}px`;
+        }
+        
+        // Hide tooltip
+        function hideTooltip(delay = 0) {
+            if (tooltipHideTimeout) {
+                clearTimeout(tooltipHideTimeout);
+                tooltipHideTimeout = null;
+            }
+            
+            if (delay > 0) {
+                tooltipHideTimeout = setTimeout(() => {
+                    const settlementTooltip = document.getElementById('settlementTooltip');
+                    const polygonTooltip = document.getElementById('polygonTooltip');
+                    const tooltips = document.querySelectorAll('.tooltip');
+                    
+                    if (settlementTooltip) {
+                        settlementTooltip.remove();
+                    }
+                    if (polygonTooltip) {
+                        polygonTooltip.remove();
+                    }
+                    // Remove all tooltips with class 'tooltip' (including marker tooltips)
+                    tooltips.forEach(tooltip => tooltip.remove());
+                    tooltipHideTimeout = null;
+                }, delay);
+            } else {
+                const settlementTooltip = document.getElementById('settlementTooltip');
+                const polygonTooltip = document.getElementById('polygonTooltip');
+                const tooltips = document.querySelectorAll('.tooltip');
+                
+                if (settlementTooltip) {
+                    settlementTooltip.remove();
+                }
+                if (polygonTooltip) {
+                    polygonTooltip.remove();
+                }
+                // Remove all tooltips with class 'tooltip' (including marker tooltips)
+                tooltips.forEach(tooltip => tooltip.remove());
+            }
+        }
+        
+        // Initialize the visualizer
+        async function init() {
+            canvas = document.getElementById('terrainCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // Set initial cursor style
+            canvas.style.cursor = 'default';
+            
+            // Add mouse event listeners for settlement hover only
+            canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('mouseleave', handleMouseLeave);
+            
+            try {
+                // Load terrain data
+                console.log('Loading terrain data...');
+                const [elevationResponse, optimizedMetadataResponse, newElevationResponse, newElevationMetadataResponse, townsResponse, markersResponse] = await Promise.all([
+                    fetch('data/elevation/eyeverse-elevation-optimized.bin'),
+                    fetch('data/elevation/eyeverse-elevation-optimized-metadata.json'),
+                    fetch('data/elevation/eyeverse-elevation-new.bin').catch(() => null),
+                    fetch('data/elevation/eyeverse-elevation-new-metadata.json').catch(() => null),
+                    fetch('data/map-layers/towns_reprojected.geojson').catch(() => null),
+                    fetch('data/map-layers/markers.geojson').catch(() => null)
+                ]);
+                
+                if (!elevationResponse.ok || !optimizedMetadataResponse.ok) {
+                    throw new Error('Failed to load terrain data files');
+                }
+                
+        // Load binary elevation data efficiently - try new data first
+        console.log('Loading binary elevation data...');
+        let elevationArrayBuffer;
+        let elevationMetadata;
+        
+        // Load metadata file
+        const optimizedMetadata = await optimizedMetadataResponse.json();
+        
+        if (newElevationResponse && newElevationResponse.ok && newElevationMetadataResponse && newElevationMetadataResponse.ok) {
+            console.log('Using new elevation data from new map data');
+            elevationArrayBuffer = await newElevationResponse.arrayBuffer();
+            elevationMetadata = await newElevationMetadataResponse.json();
+        } else {
+            console.log('Using original elevation data');
+            elevationArrayBuffer = await elevationResponse.arrayBuffer();
+            elevationMetadata = optimizedMetadata; // Use the already loaded metadata
+        }
+        
+        terrainData = new Float32Array(elevationArrayBuffer);
+        
+        console.log(`Loaded ${terrainData.length} elevation values from binary format`);
+        console.log(`Elevation range: ${elevationMetadata.minElevation} to ${elevationMetadata.maxElevation}`);
+        
+        // Load settlements from towns GeoJSON data
+        let settlementsData = [];
+        if (townsResponse && townsResponse.ok) {
+            try {
+                const townsData = await townsResponse.json();
+                console.log('Using towns GeoJSON data for settlements');
+                
+                // Convert GeoJSON features to the expected format
+                settlementsData = townsData.features.map(feature => ({
+                    name: feature.properties.Burg,
+                    lon: feature.geometry.coordinates[0], // Longitude
+                    lat: feature.geometry.coordinates[1], // Latitude
+                    population: feature.properties.Population,
+                    capital: feature.properties.Capital === 'capital',
+                    state: feature.properties.State
+                }));
+                
+                console.log(`Loaded ${settlementsData.length} settlements from towns GeoJSON`);
+            } catch (error) {
+                console.log('Failed to load towns data:', error);
+            }
+        }
+
+        // Load markers data
+        if (markersResponse && markersResponse.ok) {
+            try {
+                markersData = await markersResponse.json();
+                console.log(`Loaded ${markersData.features.length} markers`);
+            } catch (error) {
+                console.log('Failed to load markers data:', error);
+            }
+        }
+        
+        // Merge metadata: use elevation stats with settlements data
+        metadata = {
+            ...elevationMetadata,
+            burgs: settlementsData
+        };
+        
+        console.log('Elevation range:', metadata.minElevation, 'to', metadata.maxElevation);
+        console.log('Average elevation:', metadata.averageElevation);
+        console.log('Settlements:', metadata.burgs?.length || 0);
+                
+                console.log('Terrain data loaded:', {
+                    elevationPoints: terrainData.length,
+                    settlements: metadata.burgs?.length || 0,
+                    stats: metadata.stats
+                });
+                
+                document.getElementById('loading').style.display = 'none';
+                canvas.style.display = 'block';
+                document.getElementById('mapControls').style.display = 'flex';
+                
+                // Update button states based on initial zoom level
+                updatePanButtonStates();
+                
+                // Update statistics
+                updateStats();
+                
+                // Load initial visualization
+                loadVisualization();
+                
+            } catch (error) {
+                console.error('Error loading terrain data:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('error').innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+        
+        function updateStats() {
+            if (!metadata) return;
+            
+            // Use preprocessed metadata for stats
+            const actualMin = metadata.minElevation;
+            const actualMax = metadata.maxElevation;
+            const actualAvg = metadata.averageElevation;
+            
+            // Fallback to legacy stats if preprocessed metadata not available
+            const stats = metadata.stats || {};
+            const finalMin = actualMin || stats.minElevation || 0;
+            const finalMax = actualMax || stats.maxElevation || 200;
+            const finalAvg = actualAvg || stats.averageElevation || 100;
+            
+            // Statistics display removed - no longer needed
+            
+        }
+        
+        
+        async function loadVisualization() {
+            if (!terrainData || !metadata) return;
+            
+            const vizMode = currentVizMode;
+            
+            // Use fixed high-quality canvas size with proper aspect ratio (1.85:1)
+            const canvasSize = 2048; // High quality base size
+            const aspectRatio = 1.85; // longitude span / latitude span
+            const canvasWidth = canvasSize;
+            const canvasHeight = Math.round(canvasSize / aspectRatio);
+            
+            // Set canvas size with proper aspect ratio
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+            
+            // Calculate resolution (terrain data is 1024x1024)
+            const resolution = 1024;
+            const scale = canvasWidth / resolution;
+            
+            console.log(`Rendering ${vizMode} at ${canvasWidth}x${canvasHeight}...`);
+            
+            try {
+            switch (vizMode) {
+                    case 'map':
+                        await renderMapOnly(scale);
+                        await updateLegend('map');
+                    break;
+                case 'settlements':
+                        await renderSettlements(scale);
+                        await updateLegend('settlements');
+                    break;
+                case 'markers':
+                        await renderMarkers(scale);
+                        await updateLegend('markers');
+                    break;
+                case 'cultures':
+                        await renderCulturalRegions(scale);
+                        await updateLegend('cultures');
+                        break;
+                    case 'states':
+                        await renderStates(scale);
+                        await updateLegend('states');
+                    break;
+                case 'religions':
+                        await renderReligiousRegions(scale);
+                        await updateLegend('religions');
+                    break;
+                case 'biomes':
+                        await renderBiomes(scale);
+                        await updateLegend('biomes');
+                    break;
+                case 'rivers':
+                        await renderRivers(scale);
+                        await updateLegend('rivers');
+                    break;
+                case 'routes':
+                        await renderTradeRoutes(scale);
+                        await updateLegend('routes');
+                    break;
+                }
+                
+            } catch (error) {
+                console.error('Rendering error:', error);
+            }
+        }
+        
+        // Update legend based on current visualization mode
+        async function updateLegend(mode) {
+            const legendElement = document.getElementById('legend');
+            const legendContent = document.getElementById('legendContent');
+            if (!legendElement || !legendContent) return;
+            
+            // Hide legend for base map view
+            if (mode === 'map') {
+                legendElement.style.display = 'none';
+                return;
+            }
+            
+            // Show legend for other modes
+            legendElement.style.display = 'block';
+            
+            let legendHTML = '';
+            
+            switch (mode) {
+                case 'settlements':
+                    legendHTML = `
+                        <div class="legend-content">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #ffff00; border: 2px solid #ff0000;"></div>
+                                <div class="legend-label">Settlements</div>
+                    </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #ff0000; border: 3px solid #ffff00;"></div>
+                                <div class="legend-label">Capital Cities</div>
+                </div>
+                        </div>
+                    `;
+                    break;
+                case 'markers':
+                    legendHTML = `
+                        <div class="legend-content">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #ff4444; border: 2px solid #ffffff;"></div>
+                                <div class="legend-label">Battlefields</div>
+                        </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #8B4513; border: 2px solid #ffffff;"></div>
+                                <div class="legend-label">Dungeons</div>
+                        </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #C0C0C0; border: 2px solid #ffffff;"></div>
+                                <div class="legend-label">Mines</div>
+                        </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #FFFF00; border: 2px solid #000000;"></div>
+                                <div class="legend-label">Lighthouses</div>
+                    </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #8B4513; border: 2px solid #ffffff;"></div>
+                                <div class="legend-label">Mountains</div>
+                </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #9400D3; border: 2px solid #ffffff;"></div>
+                                <div class="legend-label">Portals & Gates</div>
+            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #FF69B4; border: 2px solid #ffffff;"></div>
+                                <div class="legend-label">Hot Springs</div>
+                    </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #A0522D; border: 2px solid #ffffff;"></div>
+                                <div class="legend-label">Bridges</div>
+                </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #8B4513; border: 2px solid #ffffff;"></div>
+                                <div class="legend-label">Inns & Taverns</div>
+                    </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #006400; border: 2px solid #ffffff;"></div>
+                                <div class="legend-label">Lake Monsters</div>
+                </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #8B0000; border: 2px solid #ffffff;"></div>
+                                <div class="legend-label">Hill Monsters</div>
+                    </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #228B22; border: 2px solid #ffffff;"></div>
+                                <div class="legend-label">Sacred Sites</div>
+                </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #FFD700; border: 2px solid #000000;"></div>
+                                <div class="legend-label">Royal Castles</div>
+            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #800080; border: 2px solid #ffffff;"></div>
+                                <div class="legend-label">Brigand Castles</div>
+                    </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #000000; border: 2px solid #ffffff;"></div>
+                                <div class="legend-label">Pirates</div>
+                </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #696969; border: 2px solid #ffffff;"></div>
+                                <div class="legend-label">Ancient Monuments</div>
+                    </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #B22222; border: 2px solid #ffffff;"></div>
+                                <div class="legend-label">Ruins</div>
+                </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #FF1493; border: 2px solid #ffffff;"></div>
+                                <div class="legend-label">Circuses & Events</div>
+            </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #32CD32; border: 2px solid #ffffff;"></div>
+                                <div class="legend-label">Animal Migrations</div>
+        </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #87CEEB; border: 2px solid #ffffff;"></div>
+                                <div class="legend-label">Mirage & Rifts</div>
+    </div>
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #FF4500; border: 2px solid #ffffff;"></div>
+                                <div class="legend-label">Phoenix Forge</div>
+    </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'cultures':
+                    try {
+                        // Load cultures data dynamically
+                        const response = await fetch('data/map-layers/cultures.geojson');
+                        const cultureData = await response.json();
+                        
+                        const uniqueCultures = new Map();
+                        cultureData.features.forEach(feature => {
+                            const name = feature.properties.Name;
+                            const color = feature.properties.Color;
+                            if (!uniqueCultures.has(name)) {
+                                uniqueCultures.set(name, color);
+                            }
+                        });
+                        
+                    legendHTML = `<div class="legend-content">`;
+                    uniqueCultures.forEach((color, name) => {
+                        legendHTML += `
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: ${color}40; border: 1px solid ${color};"></div>
+                                <div class="legend-label">${name}</div>
+                            </div>
+                        `;
+                    });
+                    legendHTML += `</div>`;
+                    } catch (error) {
+                        console.error('Error loading cultures for legend:', error);
+                        legendHTML = '<div class="legend-content"><div class="legend-item"><div class="legend-label">Error loading culture data</div></div></div>';
+                    }
+                    break;
+                    
+                case 'states':
+                    try {
+                        // Load states data dynamically
+                        const response = await fetch('data/map-layers/states.geojson');
+                        const stateData = await response.json();
+                        
+                        const uniqueStates = new Map();
+                        stateData.features.forEach(feature => {
+                            const name = feature.properties.State;
+                            const color = feature.properties.Color;
+                            if (name && name !== 'null' && !uniqueStates.has(name)) {
+                                uniqueStates.set(name, color);
+                            }
+                        });
+                        
+                    legendHTML = `<div class="legend-content">`;
+                    uniqueStates.forEach((color, name) => {
+                        legendHTML += `
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: ${color}40; border: 1px solid ${color};"></div>
+                                <div class="legend-label">${name}</div>
+                            </div>
+                        `;
+                    });
+                    legendHTML += `</div>`;
+                    } catch (error) {
+                        console.error('Error loading states for legend:', error);
+                        legendHTML = '<div class="legend-content"><div class="legend-item"><div class="legend-label">Error loading states data</div></div></div>';
+                    }
+                    break;
+                    
+                case 'religions':
+                    try {
+                        // Load religions data dynamically
+                        const response = await fetch('data/map-layers/religions.geojson');
+                        const religionData = await response.json();
+                        
+                        const uniqueReligions = new Map();
+                        religionData.features.forEach(feature => {
+                            const name = feature.properties.Name;
+                            const color = feature.properties.Color;
+                            if (!uniqueReligions.has(name)) {
+                                uniqueReligions.set(name, color);
+                            }
+                        });
+                        
+                    legendHTML = `<div class="legend-content">`;
+                    uniqueReligions.forEach((color, name) => {
+                        legendHTML += `
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: ${color}40; border: 1px solid ${color};"></div>
+                                <div class="legend-label">${name}</div>
+                            </div>
+                        `;
+                    });
+                    legendHTML += `</div>`;
+                    } catch (error) {
+                        console.error('Error loading religions for legend:', error);
+                        legendHTML = '<div class="legend-content"><div class="legend-item"><div class="legend-label">Error loading religion data</div></div></div>';
+                    }
+                    break;
+                    
+                case 'biomes':
+                    try {
+                        // Load biomes data dynamically
+                        const response = await fetch('data/map-layers/biomes.geojson');
+                        const biomeData = await response.json();
+                        
+                        const uniqueBiomes = new Map();
+                        biomeData.features.forEach(feature => {
+                            const name = feature.properties.Biome;
+                            const color = feature.properties.Color;
+                            if (name && name !== 'null' && !uniqueBiomes.has(name)) {
+                                uniqueBiomes.set(name, color);
+                            }
+                        });
+                        
+                    legendHTML = `<div class="legend-content">`;
+                    uniqueBiomes.forEach((color, name) => {
+                        legendHTML += `
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: ${color}60; border: 1px solid ${color};"></div>
+                                <div class="legend-label">${name}</div>
+                            </div>
+                        `;
+                    });
+                    legendHTML += `</div>`;
+            } catch (error) {
+                        console.error('Error loading biomes for legend:', error);
+                        legendHTML = '<div class="legend-content"><div class="legend-item"><div class="legend-label">Error loading biome data</div></div></div>';
+                    }
+                    break;
+                    
+                case 'rivers':
+                    legendHTML = `
+                        <div class="legend-content">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #4169E1;"></div>
+                                <div class="legend-label">River Systems</div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                    
+                case 'routes':
+                    legendHTML = `
+                        <div class="legend-content">
+                            <div class="legend-item">
+                                <div class="legend-color" style="background-color: #FFD700;"></div>
+                                <div class="legend-label">Trade Routes</div>
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            legendContent.innerHTML = legendHTML;
+        }
+        
+        // Helper function to draw map base layer
+        async function drawMapBase() {
+            const mapImage = new Image();
+            await new Promise((resolve) => {
+                mapImage.onload = resolve;
+                mapImage.src = 'map.webp';
+            });
+            
+            // Apply same squeeze to both horizontal and vertical alignment
+            const squeezedWidth = canvas.width * 0.97;
+            const squeezedHeight = canvas.height * 0.91;
+            const offsetX = 15; // Move right
+            const offsetY = 15; // Move down
+            
+            // Apply zoom and pan transformation to the base map
+            const transformedOffsetX = offsetX * zoom + panX;
+            const transformedOffsetY = offsetY * zoom + panY;
+            const transformedWidth = squeezedWidth * zoom;
+            const transformedHeight = squeezedHeight * zoom;
+            
+            ctx.drawImage(mapImage, transformedOffsetX, transformedOffsetY, transformedWidth, transformedHeight);
+        }
+        
+        async function renderHeightmapAsync(minElev, maxElev, showGrid, scale) {
+            // Clear canvas and draw map base
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            await drawMapBase();
+            
+            // Render the heightmap data
+            const chunkSize = 64;
+            const totalChunks = Math.ceil(canvas.width / chunkSize) * Math.ceil(canvas.height / chunkSize);
+            let processedChunks = 0;
+            
+            for (let chunkY = 0; chunkY < canvas.height; chunkY += chunkSize) {
+                for (let chunkX = 0; chunkX < canvas.width; chunkX += chunkSize) {
+                    const chunkWidth = Math.min(chunkSize, canvas.width - chunkX);
+                    const chunkHeight = Math.min(chunkSize, canvas.height - chunkY);
+                    
+                    const imageData = ctx.createImageData(chunkWidth, chunkHeight);
+            const data = imageData.data;
+                    
+                    for (let y = 0; y < chunkHeight; y++) {
+                        for (let x = 0; x < chunkWidth; x++) {
+                            const canvasX = chunkX + x;
+                            const canvasY = chunkY + y;
+                            
+                            // Calculate terrain data index
+                            const dataX = Math.floor((canvasX / canvas.width) * 1024);
+                            const dataY = Math.floor((canvasY / canvas.height) * 1024);
+                            const dataIndex = dataY * 1024 + dataX;
+                            
+                            if (dataIndex < terrainData.length) {
+                                const elevation = terrainData[dataIndex];
+                                const normalizedElev = (elevation - minElev) / (maxElev - minElev);
+                                
+                                // Create color based on elevation
+                                let r, g, b;
+                                if (normalizedElev < 0.2) {
+                                    // Water - blue
+                                    r = 0; g = 100; b = 200;
+                                } else if (normalizedElev < 0.4) {
+                                    // Low land - green
+                                    r = 50; g = 150; b = 50;
+                                } else if (normalizedElev < 0.7) {
+                                    // Mid land - brown
+                                    r = 139; g = 119; b = 101;
+                                } else {
+                                    // High land - white/gray
+                                    r = 200; g = 200; b = 200;
+                                }
+                                
+                                const pixelIndex = (y * chunkWidth + x) * 4;
+                                data[pixelIndex] = r;
+                                data[pixelIndex + 1] = g;
+                                data[pixelIndex + 2] = b;
+                                data[pixelIndex + 3] = 255;
+                            }
+                        }
+                    }
+                    
+                    ctx.putImageData(imageData, chunkX, chunkY);
+                    processedChunks++;
+                    
+                    // Update progress every 10 chunks
+                    if (processedChunks % 10 === 0) {
+                        const progress = Math.round((processedChunks / totalChunks) * 100);
+                        console.log(`Rendering heightmap... ${progress}% complete`);
+                        await new Promise(resolve => setTimeout(resolve, 0)); // Yield control
+                    }
+                }
+            }
+            
+        }
+        
+        function renderHeightmap(minElev, maxElev, showGrid, scale) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Use actual world bounds from metadata
+            const bounds = metadata?.worldBounds || { minLon: -60, maxLon: 20, minLat: -20, maxLat: 50 };
+            const minLon = bounds.minLon;
+            const maxLon = bounds.maxLon;
+            const minLat = bounds.minLat;
+            const maxLat = bounds.maxLat;
+            
+            // Process in chunks to avoid stack overflow for large canvases
+            const chunkSize = 64;
+            
+            for (let chunkY = 0; chunkY < canvas.height; chunkY += chunkSize) {
+                for (let chunkX = 0; chunkX < canvas.width; chunkX += chunkSize) {
+                    const chunkWidth = Math.min(chunkSize, canvas.width - chunkX);
+                    const chunkHeight = Math.min(chunkSize, canvas.height - chunkY);
+                    
+                    const imageData = ctx.createImageData(chunkWidth, chunkHeight);
+                    const data = imageData.data;
+                    
+                    for (let y = 0; y < chunkHeight; y++) {
+                        for (let x = 0; x < chunkWidth; x++) {
+                            const canvasX = chunkX + x;
+                            const canvasY = chunkY + y;
+                            
+                    // Direct mapping from canvas pixel to terrain grid
+                            const terrainX = Math.floor(canvasX / scale);
+                            const terrainY = Math.floor(canvasY / scale);
+                    const index = terrainY * 1024 + terrainX;
+                    
+                    if (index >= 0 && index < terrainData.length) {
+                        const elevation = terrainData[index];
+                        
+                        // Normalize elevation to 0-1 range
+                        const normalizedElev = Math.max(0, Math.min(1, (elevation - minElev) / (maxElev - minElev)));
+                                
+                                // Apply contrast enhancement for uniform data
+                                let enhancedElev = normalizedElev;
+                                if (maxElev - minElev < 10) { // If data is very uniform
+                                    enhancedElev = Math.pow(normalizedElev, 0.5); // Square root for better contrast
+                                }
+                        
+                        // Create color based on elevation
+                        let r, g, b;
+                                if (enhancedElev < 0.3) {
+                            // Water/Lowlands - Blue to Green
+                                    r = Math.floor(50 + enhancedElev * 100);
+                                    g = Math.floor(100 + enhancedElev * 150);
+                                    b = Math.floor(150 + enhancedElev * 50);
+                                } else if (enhancedElev < 0.6) {
+                            // Plains/Hills - Green to Brown
+                                    r = Math.floor(100 + (enhancedElev - 0.3) * 200);
+                                    g = Math.floor(150 + (enhancedElev - 0.3) * 100);
+                                    b = Math.floor(50 + (enhancedElev - 0.3) * 100);
+                        } else {
+                            // Mountains - Brown to White
+                                    r = Math.floor(150 + (enhancedElev - 0.6) * 100);
+                                    g = Math.floor(100 + (enhancedElev - 0.6) * 100);
+                                    b = Math.floor(100 + (enhancedElev - 0.6) * 150);
+                                }
+                                
+                                const pixelIndex = (y * chunkWidth + x) * 4;
+                        data[pixelIndex] = r;     // Red
+                        data[pixelIndex + 1] = g; // Green
+                        data[pixelIndex + 2] = b; // Blue
+                        data[pixelIndex + 3] = 255; // Alpha
+                    }
+                }
+            }
+            
+                    // Put the chunk data onto the canvas
+                    ctx.putImageData(imageData, chunkX, chunkY);
+                }
+            }
+            
+            // Draw grid if enabled
+        }
+        
+        async function renderMapOnly(scale) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            await drawMapBase();
+        }
+        
+        async function renderSettlements(scale) {
+            // Start with map image base
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            await drawMapBase();
+            
+            if (!metadata.burgs) return;
+            
+            // Store settlements data for hover functionality
+            currentSettlements = metadata.burgs;
+            
+            ctx.strokeStyle = '#ff0000';
+            ctx.fillStyle = '#ffff00';
+            ctx.lineWidth = 2;
+            
+            for (const settlement of metadata.burgs) {
+                // Use settlement coordinates directly (new map data should be in correct coordinate system)
+                // Settlement range: longitude -70.23 to +70.05, latitude -36.24 to +37.09
+                let x = ((settlement.lon + 70.23) / 140.28) * canvas.width; // Map -70.23 to +70.05 longitude to canvas width
+                let y = ((37.09 - settlement.lat) / 73.33) * canvas.height; // Map -36.24 to +37.09 latitude to canvas height (flipped)
+                
+                // Apply zoom and pan transformation
+                const transformed = applyInverseTransform(x, y);
+                x = transformed.x;
+                y = transformed.y;
+                
+                // Distinguish capital cities from regular settlements
+                const isCapital = settlement.capital;
+                
+                if (isCapital) {
+                    // Capital cities: red fill with yellow border, larger size
+                    ctx.fillStyle = '#ff0000';
+                    ctx.strokeStyle = '#ffff00';
+                    ctx.lineWidth = 3;
+                    const radius = Math.max(6, Math.log10(settlement.population || 1000) * 2.5);
+                ctx.beginPath();
+                    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.stroke();
+                
+                    // Draw capital city name
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 14px Arial';
+                    ctx.fillText(settlement.name, x + radius + 5, y - radius - 5);
+                } else {
+                    // Regular settlements: yellow fill with red border, smaller size
+                    ctx.fillStyle = '#ffff00';
+                    ctx.strokeStyle = '#ff0000';
+                    ctx.lineWidth = 2;
+                    const radius = Math.max(3, Math.log10(settlement.population || 1000) * 1.5);
+                    ctx.beginPath();
+                    ctx.arc(x, y, radius, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.stroke();
+                    
+                    // Draw settlement name for large settlements only
+                if (settlement.population > 10000) {
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = '12px Arial';
+                        ctx.fillText(settlement.name, x + radius + 5, y - radius - 5);
+                    }
+                }
+            }
+            
+        }
+
+        async function renderMarkers(scale) {
+            // Start with map image base
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            await drawMapBase();
+            
+            if (!markersData || !markersData.features) return;
+            
+            // Store markers data for hover functionality
+            currentMarkers = markersData.features;
+            
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            for (const marker of markersData.features) {
+                const lon = marker.geometry.coordinates[0];
+                const lat = marker.geometry.coordinates[1];
+                
+                // Convert geographic coordinates to canvas coordinates
+                // Marker range: longitude -164.92 to +165.74, latitude -89.80 to +86.82
+                let x = ((lon + 164.92) / 330.66) * canvas.width;
+                let y = ((86.82 - lat) / 176.62) * canvas.height;
+                
+                // Apply zoom and pan transformation
+                const transformed = applyInverseTransform(x, y);
+                x = transformed.x;
+                y = transformed.y;
+                
+                // Draw marker icon
+                const icon = marker.properties.icon || '📍';
+                const type = marker.properties.type || 'unknown';
+                
+                // Different styling based on marker type
+                if (type === 'battlefields') {
+                    ctx.fillStyle = '#ff4444'; // Red
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                } else if (type === 'dungeons') {
+                    ctx.fillStyle = '#8B4513'; // Brown
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                } else if (type === 'mines') {
+                    ctx.fillStyle = '#C0C0C0'; // Silver
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                } else if (type === 'lighthouses') {
+                    ctx.fillStyle = '#FFFF00'; // Yellow
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth = 2;
+                } else if (type === 'Mountain') {
+                    ctx.fillStyle = '#8B4513'; // Brown
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                } else if (type === 'Realm Portal') {
+                    ctx.fillStyle = '#9400D3'; // Purple
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                } else if (type === 'hot-springs') {
+                    ctx.fillStyle = '#FF69B4'; // Hot pink
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                } else if (type === 'bridges') {
+                    ctx.fillStyle = '#A0522D'; // Sienna
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                } else if (type === 'inns') {
+                    ctx.fillStyle = '#8B4513'; // Brown
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                } else if (type === 'lake-monsters') {
+                    ctx.fillStyle = '#006400'; // Dark green
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                } else if (type === 'hill-monsters') {
+                    ctx.fillStyle = '#8B0000'; // Dark red
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                } else if (type === 'sacred-forests' || type === 'sacred-pineries' || type === 'sacred-palm-groves') {
+                    ctx.fillStyle = '#228B22'; // Forest green
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                } else if (type === 'King\'s Heaven' || type === 'Light\'s Landing') {
+                    ctx.fillStyle = '#FFD700'; // Gold
+                    ctx.strokeStyle = '#000000';
+                    ctx.lineWidth = 2;
+                } else if (type === 'brigands') {
+                    ctx.fillStyle = '#800080'; // Purple
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                } else if (type === 'pirates') {
+                    ctx.fillStyle = '#000000'; // Black
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                } else if (type === 'statues') {
+                    ctx.fillStyle = '#696969'; // Dim gray
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                } else if (type === 'ruins') {
+                    ctx.fillStyle = '#B22222'; // Fire brick
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                } else if (type === 'circuses') {
+                    ctx.fillStyle = '#FF1493'; // Deep pink
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                } else if (type === 'jousts') {
+                    ctx.fillStyle = '#FF4500'; // Orange red
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                } else if (type === 'migration') {
+                    ctx.fillStyle = '#32CD32'; // Lime green
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                } else if (type === 'dances') {
+                    ctx.fillStyle = '#FF69B4'; // Hot pink
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                } else if (type === 'mirage') {
+                    ctx.fillStyle = '#87CEEB'; // Sky blue
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                } else if (type === 'portals') {
+                    ctx.fillStyle = '#9400D3'; // Purple
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                } else if (type === 'rifts') {
+                    ctx.fillStyle = '#DC143C'; // Crimson
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                } else if (type === 'The Phoenix Forge') {
+                    ctx.fillStyle = '#FF4500'; // Orange red
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                    } else {
+                    ctx.fillStyle = '#ff6600'; // Default orange
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                }
+                
+                // Draw background circle
+                ctx.beginPath();
+                ctx.arc(x, y, 12, 0, 2 * Math.PI);
+                ctx.fill();
+                ctx.stroke();
+                
+                // Draw marker name for important markers
+                if (type === 'battlefields' || type === 'dungeons' || type === 'mines') {
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 10px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(marker.properties.name, x, y + 20);
+                }
+            }
+        }
+
+        async function renderCulturalRegions(scale) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            await drawMapBase();
+            
+            // Load cultural data from GeoJSON file
+            try {
+                const response = await fetch('data/map-layers/cultures.geojson');
+                const cultureData = await response.json();
+                
+                // Store polygon data for hover functionality
+                currentPolygonData = cultureData;
+                
+                // Draw cultural regions as polygons using actual colors from data
+                for (const feature of cultureData.features) {
+                    const color = feature.properties.Color;
+                    
+                    ctx.fillStyle = color + '40'; // Semi-transparent
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = 2;
+                    
+                    if (feature.geometry.type === 'Polygon') {
+                        drawPolygon(feature.geometry.coordinates[0], scale);
+                    } else if (feature.geometry.type === 'MultiPolygon') {
+                        for (const polygon of feature.geometry.coordinates) {
+                            drawPolygon(polygon[0], scale);
+                        }
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error loading cultural data:', error);
+            }
+        }
+        
+        async function renderReligiousRegions(scale) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            await drawMapBase();
+            
+            // Load religious data from GeoJSON file
+            try {
+                const response = await fetch('data/map-layers/religions.geojson');
+                const religionData = await response.json();
+                
+                // Store polygon data for hover functionality
+                currentPolygonData = religionData;
+                
+                // Draw religious regions as polygons using actual colors from data
+                for (const feature of religionData.features) {
+                    const color = feature.properties.Color;
+                    
+                    ctx.fillStyle = color + '40'; // Semi-transparent
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = 2;
+                    
+                    if (feature.geometry.type === 'Polygon') {
+                        drawPolygon(feature.geometry.coordinates[0], scale);
+                    } else if (feature.geometry.type === 'MultiPolygon') {
+                        for (const polygon of feature.geometry.coordinates) {
+                            drawPolygon(polygon[0], scale);
+                        }
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error loading religious data:', error);
+            }
+        }
+        
+        async function renderStates(scale) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            await drawMapBase();
+            
+            // Load states data from GeoJSON file
+            try {
+                const response = await fetch('data/map-layers/states.geojson');
+                const stateData = await response.json();
+                
+                // Store polygon data for hover functionality
+                currentPolygonData = stateData;
+                
+                // Draw states as polygons using actual colors from data
+                for (const feature of stateData.features) {
+                    const color = feature.properties.Color;
+                    
+                    ctx.fillStyle = color + '40'; // Semi-transparent
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = 2;
+                    
+                    if (feature.geometry.type === 'Polygon') {
+                        drawPolygon(feature.geometry.coordinates[0], scale);
+                    } else if (feature.geometry.type === 'MultiPolygon') {
+                        for (const polygon of feature.geometry.coordinates) {
+                            drawPolygon(polygon[0], scale);
+                        }
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error loading states data:', error);
+            }
+        }
+        
+        async function renderBiomes(scale) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            await drawMapBase();
+            
+            try {
+                const response = await fetch('data/map-layers/biomes.geojson');
+                const biomeData = await response.json();
+                
+                // Store polygon data for hover functionality
+                currentPolygonData = biomeData;
+                
+                
+                // Draw biomes using actual colors from data
+                for (const feature of biomeData.features) {
+                    const color = feature.properties.Color;
+                    
+                    ctx.fillStyle = color + '60';
+                    ctx.strokeStyle = color;
+                    ctx.lineWidth = 2;
+                    
+                    if (feature.geometry.type === 'Polygon') {
+                        drawPolygon(feature.geometry.coordinates[0], scale);
+                    } else if (feature.geometry.type === 'MultiPolygon') {
+                        for (const polygon of feature.geometry.coordinates) {
+                            drawPolygon(polygon[0], scale);
+                        }
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error loading biome data:', error);
+            }
+        }
+        
+        async function renderRivers(scale) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            await drawMapBase();
+            
+            try {
+                const response = await fetch('data/map-layers/rivers.geojson');
+                const riverData = await response.json();
+                
+                
+                ctx.strokeStyle = '#4169E1';
+                ctx.lineWidth = 3;
+                ctx.lineCap = 'round';
+                
+                for (const feature of riverData.features) {
+                    if (feature.geometry.type === 'LineString') {
+                        drawLineString(feature.geometry.coordinates, scale, 'rivers');
+                    } else if (feature.geometry.type === 'MultiLineString') {
+                        for (const line of feature.geometry.coordinates) {
+                            drawLineString(line, scale, 'rivers');
+                        }
+                    }
+                }
+                
+            } catch (error) {
+                console.error('Error loading river data:', error);
+            }
+        }
+        
+        async function renderTradeRoutes(scale) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            await drawMapBase();
+            
+            try {
+                const response = await fetch('data/map-layers/routes.geojson');
+                const routeData = await response.json();
+                
+                
+                ctx.strokeStyle = '#FFD700';
+                ctx.lineWidth = 2;
+                ctx.lineCap = 'round';
+                ctx.setLineDash([5, 5]);
+                
+                for (const feature of routeData.features) {
+                    if (feature.geometry.type === 'LineString') {
+                        drawLineString(feature.geometry.coordinates, scale, 'routes');
+                    } else if (feature.geometry.type === 'MultiLineString') {
+                        for (const line of feature.geometry.coordinates) {
+                            drawLineString(line, scale, 'routes');
+                        }
+                    }
+                }
+                
+                ctx.setLineDash([]);
+                
+            } catch (error) {
+                console.error('Error loading route data:', error);
+            }
+        }
+        
+        function drawPolygon(coordinates, scale) {
+            ctx.beginPath();
+            for (let i = 0; i < coordinates.length; i++) {
+                // Use longitude/latitude coordinates from GeoJSON with actual ranges
+                // GeoJSON range: longitude -171.41 to +171.01, latitude -92.21 to +92.41
+                let x = ((coordinates[i][0] + 171.41) / 342.42) * canvas.width; // Map -171.41 to +171.01 longitude to canvas width
+                let y = ((92.41 - coordinates[i][1]) / 184.62) * canvas.height; // Map -92.21 to +92.41 latitude to canvas height (flipped)
+                
+                // Apply zoom and pan transformation
+                const transformed = applyInverseTransform(x, y);
+                x = transformed.x;
+                y = transformed.y;
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.stroke();
+        }
+        
+        function drawLineString(coordinates, scale, layerType = 'polygon') {
+            ctx.beginPath();
+            for (let i = 0; i < coordinates.length; i++) {
+                let x, y;
+                
+                if (layerType === 'rivers') {
+                    // Rivers coordinate range: longitude -169.00 to +169.00, latitude -90.00 to +80.483
+                    x = ((coordinates[i][0] + 169.00) / 338.00) * canvas.width;
+                    y = ((80.483 - coordinates[i][1]) / 170.483) * canvas.height;
+                } else if (layerType === 'routes') {
+                    // Trade routes coordinate range: longitude -168.84 to +168.50, latitude -87.20 to +90.00
+                    x = ((coordinates[i][0] + 168.84) / 337.34) * canvas.width;
+                    y = ((90.00 - coordinates[i][1]) / 177.20) * canvas.height;
+                } else {
+                    // Polygon layers coordinate range: longitude -171.41 to +171.01, latitude -92.21 to +92.41
+                    x = ((coordinates[i][0] + 171.41) / 342.42) * canvas.width;
+                    y = ((92.41 - coordinates[i][1]) / 184.62) * canvas.height;
+                }
+                
+                // Apply zoom and pan transformation
+                const transformed = applyInverseTransform(x, y);
+                x = transformed.x;
+                y = transformed.y;
+                
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+        }
+        
+        function drawGrid(scale) {
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+            ctx.lineWidth = 1;
+            
+            const gridSize = 64 * scale; // Every 64 pixels
+            
+            for (let x = 0; x <= canvas.width; x += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(x, 0);
+                ctx.lineTo(x, canvas.height);
+                ctx.stroke();
+            }
+            
+            for (let y = 0; y <= canvas.height; y += gridSize) {
+                ctx.beginPath();
+                ctx.moveTo(0, y);
+                ctx.lineTo(canvas.width, y);
+                ctx.stroke();
+            }
+        }
+        
+        // Helper function to convert world coordinates to grid coordinates
+        function worldToGrid(worldPos, width, height) {
+            // Use actual world bounds from metadata
+            const bounds = metadata?.worldBounds || { minLon: -60, maxLon: 20, minLat: -20, maxLat: 50 };
+            const minLon = bounds.minLon;
+            const maxLon = bounds.maxLon;
+            const minLat = bounds.minLat;
+            const maxLat = bounds.maxLat;
+            
+            // Convert world coordinates to grid coordinates (same as terrain data indexing)
+            const x = Math.round(((worldPos[0] - minLon) / (maxLon - minLon)) * width);
+            const y = Math.round(((maxLat - worldPos[1]) / (maxLat - minLat)) * height);
+            
+            return { x: Math.max(0, Math.min(width - 1, x)), y: Math.max(0, Math.min(height - 1, y)) };
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

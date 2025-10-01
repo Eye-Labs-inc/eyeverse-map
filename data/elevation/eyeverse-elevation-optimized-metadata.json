@@ -1,0 +1,11 @@
+{
+  "dataType": "float32",
+  "width": 1024,
+  "height": 1024,
+  "totalValues": 1048576,
+  "fileSize": 4194304,
+  "minElevation": 71.85946655273438,
+  "maxElevation": 161,
+  "averageElevation": 100.10739817347348,
+  "processedAt": "2025-09-28T14:56:02.576Z"
+}

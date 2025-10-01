@@ -1,0 +1,44 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-50.0, 20.0]
+      },
+      "properties": {
+        "Burg": "Capital City",
+        "Population": 50000,
+        "Capital": true,
+        "State": "Central Region"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [30.0, -10.0]
+      },
+      "properties": {
+        "Burg": "Port Town",
+        "Population": 15000,
+        "Capital": false,
+        "State": "Eastern Region"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Point",
+        "coordinates": [-20.0, -30.0]
+      },
+      "properties": {
+        "Burg": "Mining Settlement",
+        "Population": 8000,
+        "Capital": false,
+        "State": "Southern Region"
+      }
+    }
+  ]
+}

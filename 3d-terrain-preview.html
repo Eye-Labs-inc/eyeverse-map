@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eyeverse World Map</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* 3D View specific overrides */
+        body {
+            background: var(--bg-primary);
+            overflow: hidden;
+        }
+        
+        #container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        
+        #controls {
+            position: absolute;
+            top: var(--spacing-lg);
+            right: var(--spacing-lg);
+            background: var(--surface-primary);
+            padding: var(--spacing-sm);
+            border-radius: var(--radius-md);
+            backdrop-filter: blur(20px);
+            z-index: 100;
+            border: 1px solid var(--border-primary);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .control-group {
+            margin-bottom: 0;
+        }
+        
+        select {
+            width: 100%;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-sm);
+            background: var(--surface-secondary);
+            color: var(--text-primary);
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+            transition: all var(--transition-normal);
+        }
+        
+        .legend {
+            margin-top: var(--spacing-sm);
+            background: var(--surface-secondary);
+            padding: var(--spacing-sm);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-secondary);
+            display: none;
+        }
+        
+        .loading-indicator {
+            margin-top: var(--spacing-sm);
+            padding: var(--spacing-sm);
+            text-align: center;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+        
+        .legend h3 {
+            margin: 0 0 var(--spacing-sm) 0;
+            font-size: var(--font-size-md);
+            color: var(--text-primary);
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: var(--spacing-xs);
+            font-size: var(--font-size-sm);
+            color: var(--text-secondary);
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: var(--radius-sm);
+            margin-right: var(--spacing-sm);
+            border: 1px solid var(--border-primary);
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(177, 2, 2, 0.2);
+        }
+        
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 200;
+            background: var(--surface-primary);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-md);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--border-primary);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        #error {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(244, 67, 54, 0.2);
+            color: #f44336;
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            text-align: center;
+            z-index: 200;
+            display: none;
+            border: 1px solid rgba(244, 67, 54, 0.3);
+            backdrop-filter: blur(20px);
+        }
+        
+        #canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navigation">
+        <div class="nav-container">
+            <a href="index.html" class="nav-title">Eyeverse World Map</a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">🗺️ 2D View</a>
+                <a href="3d-terrain-preview.html" class="nav-link active">🌄 3D View</a>
+                <a href="data-explorer.html" class="nav-link">📊 Data Explorer</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div id="container">
+        <div id="loading">
+            <div>🔄 Loading 3D terrain...</div>
+            <div>Please wait while we build the 3D world</div>
+        </div>
+        
+        <div id="error"></div>
+        
+        
+        <div id="controls">
+            <div class="control-group">
+                <select id="viewMode">
+                    <option value="terrain">Terrain Only</option>
+                    <option value="settlements">With Settlements</option>
+                    <option value="cultures">Cultural Regions</option>
+                    <option value="wireframe">Wireframe</option>
+                </select>
+            </div>
+            <div id="loading-indicator" class="loading-indicator" style="display: none;">
+                <span>Loading...</span>
+            </div>
+            <div id="legend" class="legend">
+                <div id="legend-items"></div>
+            </div>
+        </div>
+        
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+    <script>
+        let scene, camera, renderer, terrain, settlements;
+        let metadata = null;
+        let animationId = null;
+        
+        // Initialize the 3D scene
+        async function init() {
+            try {
+                // Load metadata and settlement data
+                console.log('Loading metadata and settlement data for 3D visualization...');
+                const [metadataResponse, townsResponse] = await Promise.all([
+                    fetch('data/elevation/eyeverse-elevation-optimized-metadata.json'),
+                    fetch('data/map-layers/towns_reprojected.geojson')
+                ]);
+                
+                if (!metadataResponse.ok) {
+                    throw new Error('Failed to load metadata file');
+                }
+                
+                metadata = await metadataResponse.json();
+                
+                // Load and process settlements data
+                let settlementsData = [];
+                if (townsResponse.ok) {
+                    const townsData = await townsResponse.json();
+                    settlementsData = townsData.features.map(feature => ({
+                        name: feature.properties.Burg || 'Unknown',
+                        lon: feature.geometry.coordinates[0],
+                        lat: feature.geometry.coordinates[1],
+                        population: parseInt(feature.properties.Population) || 0,
+                        capital: feature.properties.Capital === 'true',
+                        state: feature.properties.State || 'Unknown'
+                    }));
+                    metadata.burgs = settlementsData;
+                    console.log(`Loaded ${settlementsData.length} settlements`);
+                }
+                
+                console.log('Metadata loaded:', {
+                    width: metadata.width,
+                    height: metadata.height,
+                    elevationRange: `${metadata.minElevation} to ${metadata.maxElevation}`,
+                    averageElevation: metadata.averageElevation,
+                    resolution: `${metadata.width}x${metadata.height}`,
+                    settlements: settlementsData.length
+                });
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                // Continue with empty metadata - we can still load the OBJ model
+                metadata = {};
+            }
+                
+                // Setup Three.js scene
+                setupScene();
+                
+            // Load 3D terrain model
+                regenerateTerrain();
+                
+                // Hide loading screen
+                document.getElementById('loading').style.display = 'none';
+                
+                // Setup controls
+                setupControls();
+                
+                // Start animation loop
+                animate();
+        }
+        
+        function setupScene() {
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x87CEEB); // Sky blue
+            
+            // Camera
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 10000);
+            // Position camera further out and at a better viewing angle to show more of the map
+            camera.position.set(100, 120, 100);
+            camera.lookAt(0, 0, 0);
+            
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas'), antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.4);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2);
+            directionalLight.position.set(200, 200, 100);
+            directionalLight.castShadow = true;
+            directionalLight.shadow.mapSize.width = 2048;
+            directionalLight.shadow.mapSize.height = 2048;
+            directionalLight.shadow.camera.near = 0.5;
+            directionalLight.shadow.camera.far = 500;
+            directionalLight.shadow.camera.left = -200;
+            directionalLight.shadow.camera.right = 200;
+            directionalLight.shadow.camera.top = 200;
+            directionalLight.shadow.camera.bottom = -200;
+            scene.add(directionalLight);
+            
+            // Simple orbit controls (mouse controls)
+            setupMouseControls();
+        }
+        
+        function setupMouseControls() {
+            let isMouseDown = false;
+            let mouseX = 0, mouseY = 0;
+            let isPanning = false;
+            let lookAtTarget = new THREE.Vector3(0, 0, 0);
+            
+            document.addEventListener('mousedown', (event) => {
+                isMouseDown = true;
+                mouseX = event.clientX;
+                mouseY = event.clientY;
+                
+                // Determine if this should be panning (middle mouse or shift+left click)
+                isPanning = event.button === 1 || event.shiftKey; // Middle mouse or shift+left click
+            });
+            
+            document.addEventListener('mouseup', () => {
+                isMouseDown = false;
+                isPanning = false;
+            });
+            
+            document.addEventListener('mousemove', (event) => {
+                if (!isMouseDown) return;
+                
+                const deltaX = event.clientX - mouseX;
+                const deltaY = event.clientY - mouseY;
+                
+                if (isPanning) {
+                    // Panning: move the look-at target and camera together
+                    const panSpeed = 0.5;
+                    const right = new THREE.Vector3();
+                    const up = new THREE.Vector3();
+                    
+                    // Calculate right and up vectors
+                    camera.getWorldDirection(new THREE.Vector3());
+                    right.crossVectors(camera.up, new THREE.Vector3(0, 0, -1)).normalize();
+                    up.copy(camera.up).normalize();
+                    
+                    // Pan the look-at target
+                    lookAtTarget.add(right.multiplyScalar(-deltaX * panSpeed));
+                    lookAtTarget.add(up.multiplyScalar(deltaY * panSpeed));
+                    
+                    // Update camera to look at new target
+                    camera.lookAt(lookAtTarget);
+                } else {
+                    // Rotation: rotate camera around the look-at target
+                const spherical = new THREE.Spherical();
+                    spherical.setFromVector3(camera.position.sub(lookAtTarget));
+                spherical.theta -= deltaX * 0.01;
+                spherical.phi += deltaY * 0.01;
+                spherical.phi = Math.max(0.1, Math.min(Math.PI - 0.1, spherical.phi));
+                
+                    camera.position.setFromSpherical(spherical).add(lookAtTarget);
+                    camera.lookAt(lookAtTarget);
+                }
+                
+                mouseX = event.clientX;
+                mouseY = event.clientY;
+            });
+            
+            // Zoom with mouse wheel
+            document.addEventListener('wheel', (event) => {
+                const scale = event.deltaY > 0 ? 1.1 : 0.9;
+                
+                // Zoom towards the look-at target
+                const direction = new THREE.Vector3();
+                direction.subVectors(camera.position, lookAtTarget).multiplyScalar(scale - 1);
+                camera.position.add(direction);
+                
+                // Allow closer zooming for more immersive experience
+                camera.position.y = Math.max(5, Math.min(1000, camera.position.y));
+                
+                camera.lookAt(lookAtTarget);
+            });
+            
+            // Prevent context menu on right click
+            document.addEventListener('contextmenu', (event) => {
+                event.preventDefault();
+            });
+        }
+        
+        function setupControls() {
+            // View mode control
+            document.getElementById('viewMode').addEventListener('change', async () => {
+                if (terrain) {
+                    const viewMode = document.getElementById('viewMode').value;
+                    const loadingIndicator = document.getElementById('loading-indicator');
+                    const legend = document.getElementById('legend');
+                    
+                    // Hide legend and show loading for cultural regions
+                    legend.style.display = 'none';
+                    
+                    // Remove existing overlays
+                    const existingSettlements = scene.getObjectByName('settlements');
+                    if (existingSettlements) scene.remove(existingSettlements);
+                    
+                    const existingRegions = scene.getObjectByName('culturalRegions');
+                    if (existingRegions) scene.remove(existingRegions);
+                    
+                    // Handle wireframe mode
+                    if (viewMode === 'wireframe') {
+                        // Toggle wireframe on terrain
+                        terrain.traverse((child) => {
+                            if (child.isMesh) {
+                                child.material.wireframe = !child.material.wireframe;
+                            }
+                        });
+                        return;
+                    }
+                    
+                    // Ensure terrain is not in wireframe mode for other views
+                    terrain.traverse((child) => {
+                        if (child.isMesh) {
+                            child.material.wireframe = false;
+                        }
+                    });
+                    
+                    // Add new overlays based on view mode
+                    if (viewMode === 'settlements' && metadata.burgs) {
+                        addSettlements();
+                    } else if (viewMode === 'cultures') {
+                        loadingIndicator.style.display = 'block';
+                        try {
+                            await addCulturalRegions();
+                        } finally {
+                            loadingIndicator.style.display = 'none';
+                        }
+                    }
+                }
+            });
+        }
+        
+        function regenerateTerrain() {
+            if (!metadata) {
+                console.log('Metadata not loaded yet');
+                return;
+            }
+            
+            // Remove existing terrain
+            if (terrain) {
+                scene.remove(terrain);
+                if (terrain.geometry) terrain.geometry.dispose();
+                if (terrain.material) terrain.material.dispose();
+            }
+            
+            // Remove existing settlements
+            if (settlements) {
+                scene.remove(settlements);
+                settlements.clear();
+            }
+            
+            // Load the 3D OBJ model
+            loadTerrainOBJ();
+        }
+        
+        function loadTerrainOBJ() {
+            const loader = new THREE.OBJLoader();
+            const viewMode = document.getElementById('viewMode').value;
+            
+            loader.load(
+                'data/elevation/3d-map.obj',
+                function (object) {
+                    console.log('OBJ model loaded successfully');
+            
+            // Create material based on view mode
+            let material;
+            if (viewMode === 'wireframe') {
+                material = new THREE.MeshBasicMaterial({ 
+                    color: 0x00ff00, 
+                    wireframe: true 
+                });
+            } else {
+                        // Load the actual map texture
+                        const textureLoader = new THREE.TextureLoader();
+                        const mapTexture = textureLoader.load('map.webp');
+                        
+                material = new THREE.MeshLambertMaterial({ 
+                            map: mapTexture
+                        });
+                    }
+                    
+                    // Apply material to all meshes in the OBJ
+                    object.traverse(function (child) {
+                        if (child.isMesh) {
+                            child.material = material;
+                            child.castShadow = true;
+                            child.receiveShadow = true;
+                        }
+                    });
+                    
+                    // Scale and position the model appropriately
+                    object.scale.setScalar(1.0); // Scale to match coordinate system
+                    object.position.set(0, 0, 0);
+                    
+                    terrain = object;
+            scene.add(terrain);
+            
+            // Add settlements if requested
+            if (viewMode === 'settlements' && metadata.burgs) {
+                addSettlements();
+            }
+            
+                    // Add cultural regions if requested
+                    if (viewMode === 'cultures') {
+                        addCulturalRegions();
+                    }
+                    
+                    console.log('3D terrain model loaded and positioned');
+                },
+                function (progress) {
+                    console.log('Loading progress:', (progress.loaded / progress.total * 100) + '%');
+                },
+                function (error) {
+                    console.error('Error loading OBJ model:', error);
+                    // Fallback to generated terrain if OBJ fails
+                    generateFallbackTerrain();
+                }
+            );
+        }
+        
+        function generateFallbackTerrain() {
+            console.log('Generating fallback terrain...');
+            
+            // Create a simple plane as fallback
+            const geometry = new THREE.PlaneGeometry(100, 100, 64, 64);
+            geometry.rotateX(-Math.PI / 2);
+            
+            const material = new THREE.MeshLambertMaterial({ 
+                color: 0x4a4a4a
+            });
+            
+            terrain = new THREE.Mesh(geometry, material);
+            terrain.castShadow = true;
+            terrain.receiveShadow = true;
+            scene.add(terrain);
+            
+            console.log('Fallback terrain created');
+        }
+        
+        function addSettlements() {
+            if (!metadata.burgs) return;
+            
+            const settlementGeometry = new THREE.SphereGeometry(1, 8, 6);
+            const capitalGeometry = new THREE.SphereGeometry(2, 12, 8); // Larger, more detailed for capitals
+            
+            settlements = new THREE.Group();
+            settlements.name = 'settlements';
+            
+            for (const settlement of metadata.burgs) {
+                if (settlement.population < 1000) continue; // Only show significant settlements
+                
+                // Convert geographic coordinates to 3D world coordinates
+                const worldPos = geographicToWorld(settlement.lon, settlement.lat);
+                
+                // Debug logging for first few settlements
+                if (settlements.children.length < 3) {
+                    console.log(`Settlement ${settlement.name}:`, {
+                        geo: `lon=${settlement.lon.toFixed(3)}, lat=${settlement.lat.toFixed(3)}`,
+                        world: `x=${worldPos.x.toFixed(3)}, z=${worldPos.z.toFixed(3)}`,
+                        capital: settlement.capital
+                    });
+                }
+                
+                // Sample terrain height at the correct coordinates
+                const terrainHeight = getTerrainHeightAt(worldPos.x, worldPos.z);
+                
+                // Create different materials for capitals vs regular settlements
+                let material, geometry;
+                if (settlement.capital) {
+                    // Capitals: Bright yellow with red border, larger size
+                    material = new THREE.MeshLambertMaterial({ color: 0xffff00 });
+                    geometry = capitalGeometry;
+                } else {
+                    // Regular settlements: Red
+                    material = new THREE.MeshLambertMaterial({ color: 0xff0000 });
+                    geometry = settlementGeometry;
+                }
+                
+                const settlementMesh = new THREE.Mesh(geometry, material);
+                settlementMesh.position.set(worldPos.x, terrainHeight + 2, worldPos.z);
+                settlementMesh.scale.setScalar(Math.log10(settlement.population) / 4);
+                settlementMesh.userData = { settlement };
+                
+                settlements.add(settlementMesh);
+            }
+            
+            scene.add(settlements);
+            console.log(`Added ${settlements.children.length} settlements to 3D scene`);
+        }
+        
+        async function addCulturalRegions() {
+            try {
+                // Load cultural data from GeoJSON file
+                const response = await fetch('data/map-layers/cultures.geojson');
+                const cultureData = await response.json();
+                
+                console.log('Loading cultural regions for 3D overlay...');
+                
+                // Remove existing cultural regions if any
+                const existingRegions = scene.getObjectByName('culturalRegions');
+                if (existingRegions) {
+                    scene.remove(existingRegions);
+                }
+                
+                const culturalRegions = new THREE.Group();
+                culturalRegions.name = 'culturalRegions';
+                
+                for (const feature of cultureData.features) {
+                    const color = feature.properties.Color || '#888888';
+                    console.log('Creating polygon with color:', color);
+                    
+                    if (feature.geometry.type === 'Polygon') {
+                        const polygon = create3DPolygon(feature.geometry.coordinates[0], color);
+                        if (polygon) culturalRegions.add(polygon);
+                    } else if (feature.geometry.type === 'MultiPolygon') {
+                        for (const polygonCoords of feature.geometry.coordinates) {
+                            const polygon = create3DPolygon(polygonCoords[0], color);
+                            if (polygon) culturalRegions.add(polygon);
+                        }
+                    }
+                }
+                
+                scene.add(culturalRegions);
+                console.log(`Added cultural regions overlay with ${culturalRegions.children.length} polygons`);
+                
+                // Create and show legend
+                updateCulturalLegend(cultureData);
+                
+            } catch (error) {
+                console.error('Error loading cultural regions:', error);
+            }
+        }
+        
+        function create3DPolygon(coordinates, color) {
+            if (coordinates.length < 3) return null;
+            
+            // Convert geographic coordinates to 3D world coordinates using full world coordinate system
+            const points = [];
+            for (const coord of coordinates) {
+                const worldPos = geographicToWorld(coord[0], coord[1], true); // Use full world coordinates
+                const terrainHeight = getTerrainHeightAt(worldPos.x, worldPos.z);
+                points.push(new THREE.Vector3(worldPos.x, terrainHeight + 0.5, worldPos.z));
+            }
+            
+            // Create a simple plane geometry and manually set vertices to match polygon
+            const geometry = new THREE.BufferGeometry();
+            const vertices = [];
+            const indices = [];
+            
+            // Add all points as vertices
+            for (let i = 0; i < points.length; i++) {
+                vertices.push(points[i].x, points[i].y, points[i].z);
+            }
+            
+            // Create triangle fan from first vertex
+            for (let i = 1; i < points.length - 1; i++) {
+                indices.push(0, i, i + 1);
+            }
+            
+            geometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+            geometry.setIndex(indices);
+            geometry.computeVertexNormals();
+            
+            // Create material with the cultural region color - ensure color is applied correctly
+            const material = new THREE.MeshLambertMaterial({ 
+                color: color,
+                transparent: true,
+                opacity: 0.8,
+                side: THREE.DoubleSide
+            });
+            
+            return new THREE.Mesh(geometry, material);
+        }
+        
+        function updateCulturalLegend(cultureData) {
+            const legend = document.getElementById('legend');
+            const legendItems = document.getElementById('legend-items');
+            
+            // Show legend
+            legend.style.display = 'block';
+            
+            // Get unique cultures
+            const cultures = new Map();
+            cultureData.features.forEach(feature => {
+                const culture = feature.properties.Name || 'Unknown';
+                const color = feature.properties.Color || '#888888';
+                cultures.set(culture, color);
+            });
+            
+            // Create legend items
+            legendItems.innerHTML = '';
+            cultures.forEach((color, culture) => {
+                const item = document.createElement('div');
+                item.className = 'legend-item';
+                item.innerHTML = `
+                    <div class="legend-color" style="background-color: ${color}"></div>
+                    <span>${culture}</span>
+                `;
+                legendItems.appendChild(item);
+            });
+        }
+        
+        function getTerrainHeightAt(x, z) {
+            // Use raycasting to find the terrain height at the given X,Z coordinates
+            const raycaster = new THREE.Raycaster();
+            const direction = new THREE.Vector3(0, -1, 0); // Cast ray downward
+            
+            // Cast from high above the terrain (OBJ model has max elevation around 98)
+            raycaster.set(new THREE.Vector3(x, 200, z), direction);
+            
+            const intersects = raycaster.intersectObject(terrain, true);
+            
+            if (intersects.length > 0) {
+                return intersects[0].point.y;
+            }
+            
+            // Fallback height if no intersection found
+            return 0;
+        }
+        
+        function geographicToWorld(lon, lat, useFullWorldCoords = false) {
+            let normalizedLon, normalizedLat;
+            let scaleFactor;
+            
+            if (useFullWorldCoords) {
+                // Use full world coordinate ranges (for cultural regions, states, biomes)
+                const worldMinLon = -171.41;
+                const worldMaxLon = 171.01;
+                const worldMinLat = -92.21;
+                const worldMaxLat = 92.41;
+                
+                normalizedLon = (lon - worldMinLon) / (worldMaxLon - worldMinLon);
+                normalizedLat = (lat - worldMinLat) / (worldMaxLat - worldMinLat);
+                
+                // Cultural regions scale factor
+                scaleFactor = 1.0; // Full scale for proper sizing
+            } else {
+                // Use settlement coordinate ranges (for settlements)
+                const settlementMinLon = -70.23;
+                const settlementMaxLon = 70.05;
+                const settlementMinLat = -36.24;
+                const settlementMaxLat = 37.09;
+                
+                normalizedLon = (lon - settlementMinLon) / (settlementMaxLon - settlementMinLon);
+                normalizedLat = (lat - settlementMinLat) / (settlementMaxLat - settlementMinLat);
+                
+                // Settlements use larger scale factor to extend beyond boundaries
+                scaleFactor = 1.6; // Scale up by 60% to extend beyond boundaries
+            }
+            
+            // Map to OBJ model coordinate space with appropriate scaling
+            const objX = -840.0 + (normalizedLon * 1680.0) * scaleFactor;
+            const objZ = -447.5 + (normalizedLat * 895.0) * scaleFactor;
+            
+            return { x: objX, z: objZ };
+        }
+        
+        function animate() {
+            animationId = requestAnimationFrame(animate);
+            
+            // Auto-rotation disabled - terrain stays stationary
+            // if (terrain) {
+            //     terrain.rotation.y += 0.001;
+            // }
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        // Initialize when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

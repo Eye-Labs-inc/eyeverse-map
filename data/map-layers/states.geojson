@@ -1,0 +1,59 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-60.0, 30.0],
+          [-40.0, 30.0],
+          [-40.0, 10.0],
+          [-60.0, 10.0],
+          [-60.0, 30.0]
+        ]]
+      },
+      "properties": {
+        "State": "Central Region",
+        "Color": "#4A90E2",
+        "Population": 75000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [20.0, 20.0],
+          [40.0, 20.0],
+          [40.0, 0.0],
+          [20.0, 0.0],
+          [20.0, 20.0]
+        ]]
+      },
+      "properties": {
+        "State": "Eastern Region",
+        "Color": "#7ED321",
+        "Population": 45000
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[
+          [-30.0, -10.0],
+          [-10.0, -10.0],
+          [-10.0, -30.0],
+          [-30.0, -30.0],
+          [-30.0, -10.0]
+        ]]
+      },
+      "properties": {
+        "State": "Southern Region",
+        "Color": "#F5A623",
+        "Population": 32000
+      }
+    }
+  ]
+}

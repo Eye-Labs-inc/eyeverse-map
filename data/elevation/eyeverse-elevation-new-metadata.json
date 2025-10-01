@@ -1,0 +1,10 @@
+{
+  "resolution": 1024,
+  "minElevation": 3,
+  "maxElevation": 100,
+  "averageElevation": 39.99350064993501,
+  "source": "new map data",
+  "convertedAt": "2025-09-28T18:32:48.786Z",
+  "originalMapSize": "1680x895",
+  "originalElevationPoints": 10001
+}

@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eyeverse World Map</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Data Explorer specific overrides */
+        body {
+            background: var(--bg-secondary);
+        }
+        
+        .data-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-xl);
+            margin-bottom: var(--spacing-xl);
+            align-items: stretch;
+        }
+        
+        .data-card {
+            background: var(--surface-primary);
+            padding: var(--spacing-lg);
+            border-radius: var(--radius-md);
+            backdrop-filter: blur(20px);
+            display: flex;
+            flex-direction: column;
+            min-height: 150px;
+            border: 1px solid var(--border-primary);
+            box-shadow: var(--shadow-lg);
+            transition: all var(--transition-normal);
+        }
+        
+        .data-card:hover {
+            background: var(--surface-hover);
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .data-card h3 {
+            margin-top: 0;
+            color: #f0f0f0;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .stat-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-sm);
+            margin-top: var(--spacing-xs);
+        }
+        
+        .stat-item {
+            background: var(--surface-secondary);
+            padding: var(--spacing-md);
+            border-radius: var(--radius-sm);
+            text-align: center;
+            border: 1px solid var(--border-secondary);
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
+        
+        .settlement-list {
+            max-height: 300px;
+            overflow-y: auto;
+            background: var(--surface-secondary);
+            border-radius: var(--radius-sm);
+            padding: var(--spacing-md);
+            border: 1px solid var(--border-secondary);
+        }
+        
+        .settlement-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--spacing-xs) 0;
+            border-bottom: 1px solid var(--border-secondary);
+        }
+        
+        .settlement-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .settlement-pop, .list-info {
+            color: #f0f0f0;
+            font-size: 12px;
+        }
+        
+        .biome-list, .culture-list, .religion-list, .settlement-list, .region-list {
+            height: auto;
+            min-height: 250px;
+            max-height: 450px;
+            overflow-y: auto;
+            background: var(--surface-secondary);
+            border-radius: var(--radius-sm);
+            padding: var(--spacing-md);
+            flex: 1;
+            border: 1px solid var(--border-secondary);
+        }
+        
+        .list-item {
+            padding: var(--spacing-xs) 0;
+            border-bottom: 1px solid var(--border-secondary);
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .color-indicator {
+            width: 20px;
+            height: 20px;
+            border-radius: var(--radius-sm);
+            display: inline-block;
+            margin-right: var(--spacing-sm);
+            border: 1px solid var(--border-primary);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navigation">
+        <div class="nav-container">
+            <a href="index.html" class="nav-title">Eyeverse World Map</a>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">🗺️ 2D View</a>
+                <a href="3d-terrain-preview.html" class="nav-link">🌄 3D View</a>
+                <a href="data-explorer.html" class="nav-link active">📊 Data Explorer</a>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="content">
+        <div class="container">
+        
+        <div id="loading" class="loading">
+            <div>🔄 Loading terrain data...</div>
+            <div>Analyzing your world data</div>
+        </div>
+        
+        <div id="error" class="error" style="display: none;"></div>
+        
+        <div id="content" style="display: none;">
+            <div class="data-grid">
+                <!-- Terrain Statistics -->
+                <div class="data-card">
+                    <h3>🗻 Terrain Statistics</h3>
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="minElev">-</div>
+                            <div>Min Elevation</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="maxElev">-</div>
+                            <div>Max Elevation</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="avgElev">-</div>
+                            <div>Average Elevation</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="resolution">-</div>
+                            <div>Resolution</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Settlements -->
+                <div class="data-card">
+                    <h3>🏘️ Settlements Overview</h3>
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="totalSettlements">-</div>
+                            <div>Total Settlements</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="totalPopulation">-</div>
+                            <div>Total Population</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="largestSettlement">-</div>
+                            <div>Largest Settlement</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="capitals">-</div>
+                            <div>Capital Cities</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Geographic Features -->
+                <div class="data-card">
+                    <h3>🌍 Geographic Features</h3>
+                    <div class="stat-grid">
+                        <div class="stat-item">
+                            <div class="stat-value" id="biomeCount">-</div>
+                            <div>Biome Types</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="cultureCount">-</div>
+                            <div>Cultures</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="religionCount">-</div>
+                            <div>Beliefs</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value" id="riverCount">-</div>
+                            <div>River Systems</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="data-grid">
+                <!-- Political States -->
+                <div class="data-card">
+                    <h3>🗺️ Regions</h3>
+                    <div class="region-list" id="regionList">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Cultural Groups -->
+                <div class="data-card">
+                    <h3>👥 Cultures</h3>
+                    <div class="culture-list" id="cultureList">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Religious Groups -->
+                <div class="data-card">
+                    <h3>⛪ Beliefs</h3>
+                    <div class="religion-list" id="religionList">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="data-grid">
+                <!-- Biome Distribution -->
+                <div class="data-card">
+                    <h3>🌲 Biomes</h3>
+                    <div class="biome-list" id="biomeList">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Top Settlements -->
+                <div class="data-card">
+                    <h3>🏆 Largest Settlements</h3>
+                    <div class="settlement-list" id="topSettlements">
+                        <!-- Populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script>
+        let metadata = null;
+        let biomesData = null;
+        let statesData = null;
+        let riversData = null;
+        
+        // Initialize the data explorer
+        async function init() {
+            try {
+                console.log('Loading all terrain data for exploration...');
+                
+                // Load all data files
+                const [metadataResponse, biomesResponse, statesResponse, townsResponse, riversResponse] = await Promise.all([
+                    fetch('data/elevation/eyeverse-elevation-optimized-metadata.json'),
+                    fetch('data/map-layers/biomes.geojson').catch(() => null),
+                    fetch('data/map-layers/states.geojson').catch(() => null),
+                    fetch('data/map-layers/towns_reprojected.geojson').catch(() => null),
+                    fetch('data/map-layers/rivers.geojson').catch(() => null)
+                ]);
+                
+                if (!metadataResponse.ok) {
+                    throw new Error('Failed to load core terrain data files');
+                }
+                
+                metadata = await metadataResponse.json();
+                
+                if (biomesResponse) biomesData = await biomesResponse.json();
+                if (statesResponse) statesData = await statesResponse.json();
+                
+                // Load and convert towns data to the expected format
+                if (townsResponse) {
+                    const townsData = await townsResponse.json();
+                    // Convert GeoJSON features to the expected burgs format
+                    metadata.burgs = townsData.features.map(feature => ({
+                        name: feature.properties.Burg,
+                        population: feature.properties.Population,
+                        culture: feature.properties.Culture,
+                        religion: feature.properties.Religion,
+                        capital: feature.properties.Capital === 'capital',
+                        state: feature.properties.State,
+                        province: feature.properties.Province,
+                        elevation: feature.properties['Elevation (ft)']
+                    }));
+                }
+                
+                // Load rivers data
+                if (riversResponse) {
+                    riversData = await riversResponse.json();
+                }
+                
+                console.log('All data loaded successfully:', {
+                    elevationResolution: `${metadata.width}x${metadata.height}`,
+                    settlements: metadata.burgs?.length || 0,
+                    biomes: biomesData?.features?.length || 0,
+                    states: statesData?.features?.length || 0,
+                    rivers: riversData?.features?.length || 0,
+                    cultures: new Set(metadata.burgs?.map(s => s.culture) || []).size,
+                    religions: new Set(metadata.burgs?.map(s => s.religion) || []).size
+                });
+                
+                // Hide loading and show content
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+                
+                // Populate all data
+                populateTerrainStats();
+                populateSettlementStats();
+                populateGeographicStats();
+                populateTopSettlements();
+                
+                // Populate data sections
+                if (biomesData) populateBiomes();
+                
+                if (statesData) {
+                    populateRegions();
+                }
+                populateCultures();
+                populateReligions();
+                
+            } catch (error) {
+                console.error('Error loading terrain data:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('error').style.display = 'block';
+                document.getElementById('error').innerHTML = `❌ Error: ${error.message}`;
+            }
+        }
+        
+        function populateTerrainStats() {
+            if (!metadata) return;
+            
+            document.getElementById('minElev').textContent = `${metadata.minElevation.toFixed(1)}m`;
+            document.getElementById('maxElev').textContent = `${metadata.maxElevation.toFixed(1)}m`;
+            document.getElementById('avgElev').textContent = `${metadata.averageElevation.toFixed(1)}m`;
+            document.getElementById('resolution').textContent = `${metadata.width}×${metadata.height}`;
+        }
+        
+        function populateSettlementStats() {
+            if (!metadata?.burgs) return;
+            
+            const settlements = metadata.burgs;
+            const totalPopulation = settlements.reduce((sum, s) => sum + (s.population || 0), 0);
+            const largestSettlement = settlements.reduce((max, s) => 
+                (s.population || 0) > (max.population || 0) ? s : max, settlements[0]);
+            const capitals = settlements.filter(s => s.capital).length;
+            
+            document.getElementById('totalSettlements').textContent = settlements.length;
+            document.getElementById('totalPopulation').textContent = totalPopulation.toLocaleString();
+            document.getElementById('largestSettlement').textContent = largestSettlement?.name || '-';
+            document.getElementById('capitals').textContent = capitals;
+        }
+        
+        function populateGeographicStats() {
+            // Count unique biomes instead of total features
+            const uniqueBiomes = new Set();
+            if (biomesData?.features) {
+                biomesData.features.forEach(feature => {
+                    if (feature.properties.Biome) {
+                        uniqueBiomes.add(feature.properties.Biome);
+                    }
+                });
+            }
+            const biomeCount = uniqueBiomes.size || metadata?.stats?.biomeCount || 0;
+            
+            // Count unique cultures from settlements data
+            const uniqueCultures = new Set();
+            if (metadata?.burgs) {
+                metadata.burgs.forEach(settlement => {
+                    if (settlement.culture) {
+                        uniqueCultures.add(settlement.culture);
+                    }
+                });
+            }
+            const cultureCount = uniqueCultures.size || 0;
+            
+            // Count unique beliefs from settlements data
+            const uniqueReligions = new Set();
+            if (metadata?.burgs) {
+                metadata.burgs.forEach(settlement => {
+                    if (settlement.religion) {
+                        uniqueReligions.add(settlement.religion);
+                    }
+                });
+            }
+            const religionCount = uniqueReligions.size || 0;
+            
+            // Count rivers from rivers data
+            let riverCount = 0;
+            if (riversData?.features) {
+                riverCount = riversData.features.length;
+            }
+            
+            document.getElementById('biomeCount').textContent = biomeCount;
+            document.getElementById('cultureCount').textContent = cultureCount;
+            document.getElementById('religionCount').textContent = religionCount;
+            document.getElementById('riverCount').textContent = riverCount;
+        }
+        
+        function populateTopSettlements() {
+            if (!metadata?.burgs) return;
+            
+            const settlements = metadata.burgs
+                .sort((a, b) => (b.population || 0) - (a.population || 0))
+                .slice(0, 10);
+            
+            const container = document.getElementById('topSettlements');
+            container.innerHTML = '';
+            
+            settlements.forEach((settlement, index) => {
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <span>
+                        <span style="color: #4CAF50; margin-right: 8px;">${index + 1}.</span>
+                        ${settlement.name}
+                    </span>
+                    <span class="list-info">${settlement.state} • ${settlement.culture} • ${(settlement.population || 0).toLocaleString()}</span>
+                `;
+                container.appendChild(item);
+            });
+        }
+        
+        function populateBiomes() {
+            if (!biomesData?.features) return;
+            
+            const container = document.getElementById('biomeList');
+            container.innerHTML = '';
+            
+            // Get unique biomes (in case there are multiple features per biome)
+            const uniqueBiomes = new Map();
+            biomesData.features.forEach((feature) => {
+                const biomeName = feature.properties.Biome;
+                if (biomeName && !uniqueBiomes.has(biomeName)) {
+                    uniqueBiomes.set(biomeName, {
+                        color: feature.properties.Color,
+                        habitability: feature.properties.Habitability,
+                        area: feature.properties['Area km2']
+                    });
+                }
+            });
+            
+            const colors = ['#0b9131', '#b6d95d', '#29bc56', '#d2d082', '#8B4513', '#228B22', '#32CD32', '#9ACD32', '#DEB887', '#F4A460', '#A0522D', '#87CEEB', '#DDA0DD'];
+            let colorIndex = 0;
+            
+            // Sort biomes by area size (highest first)
+            const sortedBiomes = Array.from(uniqueBiomes.entries()).sort((a, b) => (b[1].area || 0) - (a[1].area || 0));
+            
+            sortedBiomes.forEach(([biomeName, data]) => {
+                const displayColor = data.color || colors[colorIndex % colors.length];
+                const habitability = data.habitability || 'Unknown';
+                
+                // Format area with k/m suffixes
+                let area = 'Unknown';
+                if (data.area) {
+                    const areaValue = Math.round(data.area);
+                    if (areaValue >= 1000000) {
+                        area = `${(areaValue / 1000000).toFixed(1)}m km²`;
+                    } else if (areaValue >= 1000) {
+                        area = `${(areaValue / 1000).toFixed(1)}k km²`;
+                    } else {
+                        area = `${areaValue} km²`;
+                    }
+                }
+                
+                colorIndex++;
+            
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <span><span class="color-indicator" style="background-color: ${displayColor}"></span>${biomeName}</span>
+                    <span class="list-info">${habitability} • ${area}</span>
+                `;
+            container.appendChild(item);
+            });
+        }
+        
+        function populateRegions() {
+            if (!statesData?.features) return;
+            
+            const container = document.getElementById('regionList');
+            container.innerHTML = '';
+            
+            // Get unique states (in case there are duplicates)
+            const uniqueStates = new Map();
+            statesData.features.forEach((feature) => {
+                const stateName = feature.properties.State;
+                if (stateName && !uniqueStates.has(stateName)) {
+                    uniqueStates.set(stateName, feature.properties.Color);
+                }
+            });
+            
+            const colors = ['#93c5cb', '#9ee37d', '#61ddb9', '#ebb275', '#ff8b7c', '#a6d854', '#ffd92f', '#79bbbb', '#8da0cb', '#98c5c8'];
+            let colorIndex = 0;
+            
+            uniqueStates.forEach((color, stateName) => {
+                const displayColor = color || colors[colorIndex % colors.length];
+                colorIndex++;
+                
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <span><span class="color-indicator" style="background-color: ${displayColor}"></span>${stateName}</span>
+                `;
+                container.appendChild(item);
+            });
+        }
+        
+        function populateCultures() {
+            if (!metadata?.burgs) return;
+            
+            const container = document.getElementById('cultureList');
+            container.innerHTML = '';
+            
+            // Get unique cultures from settlements data
+            const uniqueCultures = new Map();
+            metadata.burgs.forEach((settlement) => {
+                const cultureName = settlement.culture;
+                if (cultureName) {
+                    if (!uniqueCultures.has(cultureName)) {
+                        uniqueCultures.set(cultureName, {
+                            settlements: new Set(),
+                            states: new Set()
+                        });
+                    }
+                    uniqueCultures.get(cultureName).settlements.add(settlement.name);
+                    if (settlement.state) {
+                        uniqueCultures.get(cultureName).states.add(settlement.state);
+                    }
+                }
+            });
+            
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#feca57', '#ff9ff3', '#54a0ff'];
+            let colorIndex = 0;
+            
+            // Sort cultures by number of regions (highest first)
+            const sortedCultures = Array.from(uniqueCultures.entries()).sort((a, b) => b[1].states.size - a[1].states.size);
+            
+            sortedCultures.forEach(([cultureName, data]) => {
+                const displayColor = colors[colorIndex % colors.length];
+                const stateCount = data.states.size > 1 ? `${data.states.size} regions` : '1 region';
+                colorIndex++;
+                
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <span><span class="color-indicator" style="background-color: ${displayColor}"></span>${cultureName}</span>
+                    <span class="list-info">${stateCount}</span>
+                `;
+                container.appendChild(item);
+            });
+        }
+        
+        function populateReligions() {
+            if (!metadata?.burgs) return;
+            
+            const container = document.getElementById('religionList');
+            container.innerHTML = '';
+            
+            // Get unique beliefs from settlements data
+            const uniqueReligions = new Map();
+            metadata.burgs.forEach((settlement) => {
+                const religionName = settlement.religion;
+                if (religionName) {
+                    if (!uniqueReligions.has(religionName)) {
+                        uniqueReligions.set(religionName, {
+                            settlements: new Set(),
+                            states: new Set()
+                        });
+                    }
+                    uniqueReligions.get(religionName).settlements.add(settlement.name);
+                    if (settlement.state) {
+                        uniqueReligions.get(religionName).states.add(settlement.state);
+                    }
+                }
+            });
+            
+            const colors = ['#8e44ad', '#e74c3c', '#f39c12', '#27ae60', '#3498db', '#9b59b6', '#1abc9c'];
+            let colorIndex = 0;
+            
+            // Sort beliefs by number of regions (highest first)
+            const sortedReligions = Array.from(uniqueReligions.entries()).sort((a, b) => b[1].states.size - a[1].states.size);
+            
+            sortedReligions.forEach(([religionName, data]) => {
+                const displayColor = colors[colorIndex % colors.length];
+                const stateCount = data.states.size > 1 ? `${data.states.size} regions` : '1 region';
+                colorIndex++;
+                
+                const item = document.createElement('div');
+                item.className = 'list-item';
+                item.innerHTML = `
+                    <span><span class="color-indicator" style="background-color: ${displayColor}"></span>${religionName}</span>
+                    <span class="list-info">${stateCount}</span>
+                `;
+                container.appendChild(item);
+            });
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', init);
+    </script>
+</body>
+</html>

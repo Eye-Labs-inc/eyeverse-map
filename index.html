@@ -1814,6 +1814,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             await drawMapBase();
             
+            
             // Load religious data from GeoJSON file
             try {
                 const response = await fetch('data/map-layers/religions.geojson');
@@ -1826,9 +1827,9 @@
                 for (const feature of religionData.features) {
                     const color = feature.properties.Color;
                     
-                    ctx.fillStyle = color + '40'; // Semi-transparent
+                    ctx.fillStyle = color + '80'; // Use original colors with better opacity
                     ctx.strokeStyle = color;
-                    ctx.lineWidth = 2;
+                    ctx.lineWidth = 3;
                     
                     if (feature.geometry.type === 'Polygon') {
                         drawPolygon(feature.geometry.coordinates[0], scale);
@@ -1838,6 +1839,7 @@
                         }
                     }
                 }
+                
                 
             } catch (error) {
                 console.error('Error loading religious data:', error);
@@ -1973,6 +1975,7 @@
         
         function drawPolygon(coordinates, scale) {
             ctx.beginPath();
+            let firstPoint = true;
             for (let i = 0; i < coordinates.length; i++) {
                 // Use longitude/latitude coordinates from GeoJSON with actual ranges
                 // GeoJSON range: longitude -171.41 to +171.01, latitude -92.21 to +92.41
@@ -1983,6 +1986,7 @@
                 const transformed = applyInverseTransform(x, y);
                 x = transformed.x;
                 y = transformed.y;
+                
                 
                 if (i === 0) {
                     ctx.moveTo(x, y);

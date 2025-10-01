@@ -1,0 +1,15 @@
+Id,Name,Color,Type,Form,Supreme Deity,Area km2,Believers,Origins,Potential,Expansionism
+12,Thetford Cult,#c0e497,Organized,Dualism,"Helskirk, The Sad Council",544515.6213,1444468,"Mercian Deities",state,4
+13,Dudid Deities,#deca5f,Organized,Polytheism,"Brarard, The Wise Boar",7468.060600000001,56667,"Westen Beliefs",state,8
+14,Norwickism,#bfa08f,Organized,Monotheism,"Shifnal, The Peaceful Antelope of Doom",9013087.4449,18146907,"Westen Beliefs",global,5
+16,Aberian Dissenters,#87eead,Heresy,Dualism,"Helskirk, The Sad Council",23344.2174,120764,"Thetford Cult",global,2
+2,Westen Beliefs,#bf86af,Folk,Animism,"",290888.794,787331,"",undefined,undefined
+4,Guantzu Faith,#87b5c4,Folk,Polytheism,"Kamgong, The Elder",1790115.0155000002,1425010,"",undefined,undefined
+5,Rakhnid Beliefs,#d9bbb1,Folk,Animism,"",271539.7279,176856,"",undefined,undefined
+6,Durinn Pantheon,#afce70,Folk,Polytheism,"Khiz, The Far Vulture",5134369.9988,2928562,"",undefined,undefined
+7,Nortumbic Beliefs,#edc1e2,Folk,Shamanism,"Wigton, The Orange Death",1116892.8533,1582595,"",undefined,undefined
+8,Uruk Deities,#f2ba61,Folk,Polytheism,"Krigh, The Last Mother",5723902.8805,2918611,"",undefined,undefined
+9,Keltan Beliefs,#ed7a79,Folk,Shamanism,"Aresyntige, The Ancient",784511.9324,508519,"",undefined,undefined
+11,Trow Gods,#fadb75,Folk,Polytheism,"Math'vhanu, The Numen of Ice",53608.1413,24306,"",undefined,undefined
+15,Britian Sect,#c35f92,Cult,Dark Cult,"Aberaldy, The Dead Buffalo of Gates",193438.43680000002,309530,"Keltan Beliefs",global,1
+0,No religion,,,,"",8291218.440400001,6472,"",,

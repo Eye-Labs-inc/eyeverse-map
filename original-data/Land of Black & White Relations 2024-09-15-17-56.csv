@@ -1,0 +1,17 @@
+,Towcesland,Arania,Sor'thaz,Knutsdonia,Chawburia,Afespia,Chichia,Waria,Swasings,Blecland,Withamberia,Milcesia,Chiptonby,Seavedonia,Ardg,Comburghia
+Towcesland,x,Enemy,Ally,Enemy,Neutral,Suspicion,Ally,Suspicion,Neutral,Suspicion,Suspicion,Suspicion,Suspicion,Friendly,Neutral,Ally
+Arania,Enemy,x,Friendly,Suspicion,Neutral,Suspicion,Friendly,Rival,Neutral,Neutral,Suspicion,Neutral,Rival,Friendly,Unknown,Neutral
+Sor'thaz,Ally,Friendly,x,Enemy,Suspicion,Suspicion,Suspicion,Ally,Unknown,Suspicion,Suspicion,Suspicion,Ally,Suspicion,Suspicion,Suspicion
+Knutsdonia,Enemy,Suspicion,Enemy,x,Suspicion,Suspicion,Friendly,Enemy,Neutral,Unknown,Ally,Suspicion,Enemy,Neutral,Suspicion,Suspicion
+Chawburia,Neutral,Neutral,Suspicion,Suspicion,x,Friendly,Neutral,Ally,Unknown,Unknown,Friendly,Friendly,Ally,Suspicion,Neutral,Ally
+Afespia,Suspicion,Suspicion,Suspicion,Suspicion,Friendly,x,Suspicion,Ally,Neutral,Neutral,Suzerain,Enemy,Ally,Neutral,Neutral,Ally
+Chichia,Ally,Friendly,Suspicion,Friendly,Neutral,Suspicion,x,Friendly,Neutral,Friendly,Suspicion,Neutral,Friendly,Friendly,Neutral,Rival
+Waria,Suspicion,Rival,Ally,Enemy,Ally,Ally,Friendly,x,Neutral,Friendly,Ally,Enemy,Suzerain,Rival,Suspicion,Rival
+Swasings,Neutral,Neutral,Unknown,Neutral,Unknown,Neutral,Neutral,Neutral,x,Neutral,Neutral,Neutral,Neutral,Suspicion,Neutral,Neutral
+Blecland,Suspicion,Neutral,Suspicion,Unknown,Unknown,Neutral,Friendly,Friendly,Neutral,x,Neutral,Unknown,Friendly,Enemy,Friendly,Neutral
+Withamberia,Suspicion,Suspicion,Suspicion,Ally,Friendly,Vassal,Suspicion,Ally,Neutral,Neutral,x,Enemy,Ally,Neutral,Neutral,Ally
+Milcesia,Suspicion,Neutral,Suspicion,Suspicion,Friendly,Enemy,Neutral,Enemy,Neutral,Unknown,Enemy,x,Enemy,Neutral,Unknown,Enemy
+Chiptonby,Suspicion,Rival,Ally,Enemy,Ally,Ally,Friendly,Vassal,Neutral,Friendly,Ally,Enemy,x,Rival,Suspicion,Rival
+Seavedonia,Friendly,Friendly,Suspicion,Neutral,Suspicion,Neutral,Friendly,Rival,Suspicion,Enemy,Neutral,Neutral,Rival,x,Suspicion,Neutral
+Ardg,Neutral,Unknown,Suspicion,Suspicion,Neutral,Neutral,Neutral,Suspicion,Neutral,Friendly,Neutral,Unknown,Suspicion,Suspicion,x,Suspicion
+Comburghia,Ally,Neutral,Suspicion,Suspicion,Ally,Ally,Rival,Rival,Neutral,Neutral,Ally,Enemy,Rival,Neutral,Suspicion,x

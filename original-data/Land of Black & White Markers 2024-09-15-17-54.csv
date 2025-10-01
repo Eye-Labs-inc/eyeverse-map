@@ -1,0 +1,97 @@
+Id,Type,Icon,Name,Note,X,Y,Latitude,Longitude
+marker0,Mountain,🗻,"Ascension Mountain","<p>Active volcano. Height: 60,000 ft</p>",1401,47,33.57,46.95
+marker1,Realm Portal,✨,"Unknown Gate","<p>The Unknown gate is said to be the portal to an unknown realm. Ascension lies behind.</p>",1392.4,44.1,33.81,46.23
+marker2,hot-springs,♨️,"Botbuse Hot Springs","A hot springs area. Average temperature: 86°F",1133.09,56.6,32.76,24.53
+marker3,hot-springs,♨️,"Shathurga Hot Springs","A hot springs area. Average temperature: 68°F",1638.19,538.43,-7.56,66.8
+marker4,hot-springs,♨️,"Dudud Hot Springs","A hot springs area. Average temperature: 142°F",757.81,190.43,21.56,-6.88
+marker5,mines,⛏️,"Shatharb — silver mining town","Shatharb is a mining town of 10023 people just nearby the silver mine",1639.49,573.61,-10.5,66.91
+marker6,mines,⛏️,"Baragz — iron mining town","Baragz is a mining town of 3514 people just nearby the iron mine",1539.94,521.9,-6.18,58.58
+marker7,mines,⛏️,"Shiz — silver mining town","Shiz is a mining town of 3729 people just nearby the silver mine",1549.45,515.73,-5.66,59.37
+marker8,bridges,🌉,"Thetford Bridge","An old crossing of the Berford River, rarely used since collapse during the flood",325.49,231.12,18.16,-43.06
+marker9,inns,🍻,"The Amber Beaver","<p>A big and famous roadside tavern. Delicious Cat fish with Honey Squeeze Celestial Red is served here</p>",193.92,447.28,0.07,-54.07
+marker10,lighthouses,🚨,"Coclian Lighthouse","<p>A lighthouse to serve as a beacon for ships in the dark sea</p>",902.8,474.31,-2.19,5.26
+marker11,lighthouses,🚨,"Clitneslean Lighthouse","<p>A lighthouse to serve as a beacon for ships in the dark sea</p>",864.1,433.88,1.19,2.02
+marker12,lighthouses,🚨,"Bunley Lighthouse","<p>A lighthouse to serve as a beacon for ships in the dark sea</p>",884.57,451.32,-0.27,3.73
+marker13,lighthouses,🚨,"Newboviltonese Lighthouse","<p>A lighthouse to serve as a beacon for ships in the dark sea</p>",961.8,518,-5.85,10.19
+marker14,battlefields,⚔️,"Bababiladus Battlefield","A historical battle of the Ardg Campaign. 
+Date: June 11, 1998 Eyeverse Era",991.75,715.58,-22.38,12.7
+marker15,battlefields,⚔️,"Zalbredh Battlefield","<p>A historical battle of the Seavedonian War. Date: 45th moon 104 Eyeverse Era</p>",1236.24,365.08,6.95,33.16
+marker16,battlefields,⚔️,"Nashras Battlefield","A historical battle of the Knutsdonian Campaign. 
+Date: December 15, 236 Eyeverse Era",87.51,563.11,-9.63,-62.98
+marker17,dungeons,🗝️,"Dungeon","<div>Undiscovered dungeon. See <a href=""https://watabou.github.io/one-page-dungeon/?seed=8194174378757"" target=""_blank"">One page dungeon</a></div><iframe src=""https://watabou.github.io/one-page-dungeon/?seed=8194174378757"" sandbox=""allow-scripts allow-same-origin""></iframe>",1663.8,805.17,-29.88,68.94
+marker18,dungeons,🗝️,"Dungeon","<div>Undiscovered dungeon. See <a href=""https://watabou.github.io/one-page-dungeon/?seed=8194174373479"" target=""_blank"">One page dungeon</a></div><iframe src=""https://watabou.github.io/one-page-dungeon/?seed=8194174373479"" sandbox=""allow-scripts allow-same-origin""></iframe>",253.2,298.9,12.49,-49.11
+marker19,dungeons,🗝️,"Dungeon","<div>Undiscovered dungeon. See <a href=""https://watabou.github.io/one-page-dungeon/?seed=8194174374776"" target=""_blank"">One page dungeon</a></div><iframe src=""https://watabou.github.io/one-page-dungeon/?seed=8194174374776"" sandbox=""allow-scripts allow-same-origin""></iframe>",1442.32,410.41,3.15,50.41
+marker20,dungeons,🗝️,"Dungeon","<div>Undiscovered dungeon. See <a href=""https://watabou.github.io/one-page-dungeon/?seed=8194174376375"" target=""_blank"">One page dungeon</a></div><iframe src=""https://watabou.github.io/one-page-dungeon/?seed=8194174376375"" sandbox=""allow-scripts allow-same-origin""></iframe>",1185.5,594.38,-12.24,28.92
+marker21,dungeons,🗝️,"Dungeon","<div>Undiscovered dungeon. See <a href=""https://watabou.github.io/one-page-dungeon/?seed=8194174374399"" target=""_blank"">One page dungeon</a></div><iframe src=""https://watabou.github.io/one-page-dungeon/?seed=8194174374399"" sandbox=""allow-scripts allow-same-origin""></iframe>",1474.23,377.13,5.94,53.08
+marker22,dungeons,🗝️,"Dungeon","<div>Undiscovered dungeon. See <a href=""https://watabou.github.io/one-page-dungeon/?seed=8194174374904"" target=""_blank"">One page dungeon</a></div><iframe src=""https://watabou.github.io/one-page-dungeon/?seed=8194174374904"" sandbox=""allow-scripts allow-same-origin""></iframe>",1525.22,421.55,2.22,57.35
+marker23,dungeons,🗝️,"Dungeon","<div>Undiscovered dungeon. See <a href=""https://watabou.github.io/one-page-dungeon/?seed=8194174371506"" target=""_blank"">One page dungeon</a></div><iframe src=""https://watabou.github.io/one-page-dungeon/?seed=8194174371506"" sandbox=""allow-scripts allow-same-origin""></iframe>",626.65,130.05,26.62,-17.86
+marker24,dungeons,🗝️,"Dungeon","<div>Undiscovered dungeon. See <a href=""https://watabou.github.io/one-page-dungeon/?seed=8194174378141"" target=""_blank"">One page dungeon</a></div><iframe src=""https://watabou.github.io/one-page-dungeon/?seed=8194174378141"" sandbox=""allow-scripts allow-same-origin""></iframe>",823.78,754.82,-25.67,-1.36
+marker25,dungeons,🗝️,"Dungeon","<div>Undiscovered dungeon. See <a href=""https://watabou.github.io/one-page-dungeon/?seed=819417437210"" target=""_blank"">One page dungeon</a></div><iframe src=""https://watabou.github.io/one-page-dungeon/?seed=819417437210"" sandbox=""allow-scripts allow-same-origin""></iframe>",764.31,15.8,36.18,-6.33
+marker26,dungeons,🗝️,"Dungeon","<div>Undiscovered dungeon. See <a href=""https://watabou.github.io/one-page-dungeon/?seed=8194174371643"" target=""_blank"">One page dungeon</a></div><iframe src=""https://watabou.github.io/one-page-dungeon/?seed=8194174371643"" sandbox=""allow-scripts allow-same-origin""></iframe>",616.2,144.1,25.44,-18.73
+marker27,dungeons,🗝️,"Dungeon","<div>Undiscovered dungeon. See <a href=""https://watabou.github.io/one-page-dungeon/?seed=8194174376490"" target=""_blank"">One page dungeon</a></div><iframe src=""https://watabou.github.io/one-page-dungeon/?seed=8194174376490"" sandbox=""allow-scripts allow-same-origin""></iframe>",1402.23,602.2,-12.9,47.05
+marker28,dungeons,🗝️,"Dungeon","<div>Undiscovered dungeon. See <a href=""https://watabou.github.io/one-page-dungeon/?seed=819417437584"" target=""_blank"">One page dungeon</a></div><iframe src=""https://watabou.github.io/one-page-dungeon/?seed=819417437584"" sandbox=""allow-scripts allow-same-origin""></iframe>",111.61,59.17,32.55,-60.96
+marker29,dungeons,🗝️,"Dungeon","<div>Undiscovered dungeon. See <a href=""https://watabou.github.io/one-page-dungeon/?seed=8194174374467"" target=""_blank"">One page dungeon</a></div><iframe src=""https://watabou.github.io/one-page-dungeon/?seed=8194174374467"" sandbox=""allow-scripts allow-same-origin""></iframe>",869.58,388.76,4.97,2.48
+marker30,dungeons,🗝️,"Dungeon","<div>Undiscovered dungeon. See <a href=""https://watabou.github.io/one-page-dungeon/?seed=8194174379225"" target=""_blank"">One page dungeon</a></div><iframe src=""https://watabou.github.io/one-page-dungeon/?seed=8194174379225"" sandbox=""allow-scripts allow-same-origin""></iframe>",628.59,857.12,-34.23,-17.69
+marker31,dungeons,🗝️,"Dungeon","<div>Undiscovered dungeon. See <a href=""https://watabou.github.io/one-page-dungeon/?seed=8194174378167"" target=""_blank"">One page dungeon</a></div><iframe src=""https://watabou.github.io/one-page-dungeon/?seed=8194174378167"" sandbox=""allow-scripts allow-same-origin""></iframe>",1146.75,756.66,-25.82,25.67
+marker32,dungeons,🗝️,"Dungeon","<div>Undiscovered dungeon. See <a href=""https://watabou.github.io/one-page-dungeon/?seed=8194174375338"" target=""_blank"">One page dungeon</a></div><iframe src=""https://watabou.github.io/one-page-dungeon/?seed=8194174375338"" sandbox=""allow-scripts allow-same-origin""></iframe>",1158.75,474.18,-2.18,26.68
+marker33,dungeons,🗝️,"Dungeon","<div>Undiscovered dungeon. See <a href=""https://watabou.github.io/one-page-dungeon/?seed=8194174378632"" target=""_blank"">One page dungeon</a></div><iframe src=""https://watabou.github.io/one-page-dungeon/?seed=8194174378632"" sandbox=""allow-scripts allow-same-origin""></iframe>",127.05,801.96,-29.61,-59.67
+marker34,dungeons,🗝️,"Dungeon","<div>Undiscovered dungeon. See <a href=""https://watabou.github.io/one-page-dungeon/?seed=8194174373839"" target=""_blank"">One page dungeon</a></div><iframe src=""https://watabou.github.io/one-page-dungeon/?seed=8194174373839"" sandbox=""allow-scripts allow-same-origin""></iframe>",902.73,328.01,10.05,5.25
+marker35,dungeons,🗝️,"Dungeon","<div>Undiscovered dungeon. See <a href=""https://watabou.github.io/one-page-dungeon/?seed=8194174375985"" target=""_blank"">One page dungeon</a></div><iframe src=""https://watabou.github.io/one-page-dungeon/?seed=8194174375985"" sandbox=""allow-scripts allow-same-origin""></iframe>",1073.13,540.68,-7.75,19.51
+marker36,dungeons,🗝️,"Dungeon","<div>Undiscovered dungeon. See <a href=""https://watabou.github.io/one-page-dungeon/?seed=8194174378258"" target=""_blank"">One page dungeon</a></div><iframe src=""https://watabou.github.io/one-page-dungeon/?seed=8194174378258"" sandbox=""allow-scripts allow-same-origin""></iframe>",579.46,765.65,-26.58,-21.8
+marker37,dungeons,🗝️,"Dungeon","<div>Undiscovered dungeon. See <a href=""https://watabou.github.io/one-page-dungeon/?seed=8194174378879"" target=""_blank"">One page dungeon</a></div><iframe src=""https://watabou.github.io/one-page-dungeon/?seed=8194174378879"" sandbox=""allow-scripts allow-same-origin""></iframe>",1479.3,818.63,-31.01,53.5
+marker38,dungeons,🗝️,"Dungeon","<div>Undiscovered dungeon. See <a href=""https://watabou.github.io/one-page-dungeon/?seed=8194174379062"" target=""_blank"">One page dungeon</a></div><iframe src=""https://watabou.github.io/one-page-dungeon/?seed=8194174379062"" sandbox=""allow-scripts allow-same-origin""></iframe>",334.02,838.9,-32.71,-42.35
+marker39,lake-monsters,🐉,"Chiwai Monster","<p>Rumors say a relic monster of 48 ft long inhabits Chiwai Lake. Truth or lie, folks are afraid to fish in the lake</p>",1093.31,507.03,-4.93,21.2
+marker40,lake-monsters,🐉,"Boleforden Monster","<p>Rumors say a relic monster 39 ft long inhabits Boleforden Lake. Truth or lie, folks are afraid to fish in the lake</p>",252.1,632.8,-15.46,-49.2
+marker41,lake-monsters,🐉,"Aberpenner Monster","Rumors say a relic monster of 14 ft long inhabits Aberpenner Lake. Truth or lie, folks are afraid to fish in the lake",248.47,119.25,27.52,-49.51
+marker42,hill-monsters,👹,"Khezegh Hag","Tales speak of a terrifying Hag who inhabits Khezegh hills and eats kids whole",1187.2,216.6,19.37,29.06
+marker43,hill-monsters,👹,"Uldgezg Giant","<p>Elders speak of a prime Giant who inhabits Uldgezg hills, a previous Eyedity which lost his master and harasses travelers in the area</p>",1648.7,201.1,20.67,67.68
+marker44,sacred-forests,🌳,"Darton Forest","A sacred forest of Kentian culture",233.87,440.26,0.66,-50.73
+marker45,sacred-pineries,🌲,"Krog Pinery","A sacred pinery of Uruk culture",345.41,57.96,32.65,-41.39
+marker46,sacred-palm-groves,🌴,"Taiwaiwotin Palm Grove","A sacred palm grove of Guantzu culture",897.88,421.81,2.2,4.84
+marker47,King's Heaven,🏰,"King's Heaven","<p>Where the Kingdom's Royal palace lay is based in this area, although it is high in the sky, it is said that this is where the Royal Bicorns roam in a gated community below the Royal Heavens.&nbsp;</p>",1610.7,341.4,8.93,64.5
+marker48,brigands,🏰,"Culzan Dogs","<p>The castle of the ruthless inhabitants of the Culzan Forest, beings with two eyes, and short 4 foot statures, with powerful arms</p>",185.88,390.31,4.84,-54.74
+marker49,brigands,🏰,"Cambhirhond Snakes","<p>Lizard like beings reside in this castle, they only come out to hunt small creatures and insects at night</p>",265.76,121.19,27.36,-48.06
+marker50,pirates,🏴‍☠️,"Pirates","Pirate ships have been spotted in these waters",272,24.1,35.48,-47.54
+marker51,pirates,🏴‍☠️,"Pirates","Pirate ships have been spotted in these waters",164.9,513.84,-5.5,-56.5
+marker52,statues,🗿,"Treters Runestone","An ancient runestone. It has an inscription, but no one can translate it:
+        <div style=""font-size: 1.8em; line-break: anywhere;"">�����𐠫��� �𐠥� �𐠜𐠱���𐠍���𐠰���𐠎�  ���� 𐠥𐠏��𐠝��𐠲�𐠋𐠢𐠷��𐠧����𐠥�𐠰���𐠓��𐠕 �𐠦𐠱𐠙𐠱�𐠏�</div>",203.46,758.57,-25.98,-53.27
+marker53,statues,🗿,"Whitrewes Monolith","An ancient monolith. It has an inscription, but no one can translate it:
+        <div style=""font-size: 1.8em; line-break: anywhere;"">ፀ ጠአገዘከ ኀሰኀአየየጠመሠዘረአመሠጰጠዐፈጸበሀ ጰገወፐዘመወሀጸነመፈፀ ደተ ኀወወጸጠደየጠ ሀገሀፈበ</div>",1134.34,653.15,-17.16,24.63
+marker54,statues,🗿,"Working Runestone","<p>An ancient runestone. It has an inscription, but no one can translate it:</p>
+<div style=""font-size: 1.8em; line-break: anywhere;"">ለጸፈቀዘፈሰመጰጠነለፈነደወፈፀየሰ ተሀዐጠረ ጠሀኀየፀ ደፀቀፐፀበመጰየተሐኀኀነ ሠ</div>
+<div style=""font-size: 1.8em; line-break: anywhere;"">&nbsp;</div>
+<div style=""font-size: 1.8em; line-break: anywhere;"">&nbsp;</div>
+<div style=""font-size: 1.8em; line-break: anywhere;"">We were working hard for the past few years</div>",1203.9,707,-21.67,30.45
+marker55,statues,🗿,"Shorough Sculpture","An ancient sculpture. It has an inscription, but no one can translate it:
+        <div style=""font-size: 1.8em; line-break: anywhere;"">ⳎⳆⳐⳢⳐ⳾ⳬⳖⳚⳘⳢⲺⳈ⳥ⳘⳎⳖ  ⳈⳫⳭⳲⳔⲴⳆⳈⳁⳒⳈⳎⳤⳄⳜⳚⳆⳆⳬⲺⳒⳖⳭ ⳫⳆ⳧Ⳝ  Ⳗ⳩Ⲹ⳾ⳘⲸⲾⳄⲸ ⳭⳎⳞⳞⳔⳚⲲⳬⳢⳌⲸ⳹ Ⳉ Ⳓⳃ ⳩ⳎⲶⳚ</div>",965.22,455.95,-0.66,10.48
+marker56,ruins,🏺,"Ruined City","Ruins of an ancient city. Untold riches may lie within",1345.18,622.02,-14.56,42.28
+marker57,ruins,🏺,"Ruined Temple","Ruins of an ancient temple. Untold riches may lie within",348.51,783.87,-28.1,-41.13
+marker58,ruins,🏺,"Ruined Town","Ruins of an ancient town. Untold riches may lie within",1316.37,648.12,-16.74,39.87
+marker59,ruins,🏺,"Ruined Mausoleum","Ruins of an ancient mausoleum. Untold riches may lie within",1332.79,326.7,10.16,41.24
+marker60,ruins,🏺,"Ruined Settlement","Ruins of an ancient settlement. Untold riches may lie within",20.3,417.8,2.54,-68.6
+marker61,ruins,🏺,"Ruined City","Ruins of an ancient city. Untold riches may lie within",924.17,270.92,14.83,7.04
+marker62,circuses,🎪,"Travelling Breathtaking Circus","Roll up, roll up, this breathtaking circus is here for a limited time only",1195.56,612.19,-13.73,29.76
+marker63,circuses,🎪,"Travelling Incomprehensible Circus","Roll up, roll up, this incomprehensible circus is here for a limited time only",112.72,556.42,-9.07,-60.87
+marker64,jousts,🤺,"Maringra Contest","Warriors from around the land gather for a contest of speed in Maringra, with fame, fortune and favour on offer to the victor",186.32,489.99,-3.51,-54.71
+marker65,migration,🐗,"Hawks migration","A huge group of hawks are migrating, whether part of their annual routine, or something more extraordinary",1113.56,817.64,-30.93,22.89
+marker66,migration,🐗,"Beavers migration","A huge group of beavers are migrating, whether part of their annual routine, or something more extraordinary",1090.39,88.31,30.11,20.96
+marker67,migration,🐗,"Rooks migration","A huge group of rooks are migrating, whether part of their annual routine, or something more extraordinary",770.79,243.62,17.11,-5.79
+marker68,migration,🐗,"Bisons migration","A huge group of bisons are migrating, whether part of their annual routine, or something more extraordinary",1269.31,894,-37.32,35.93
+marker69,migration,🐗,"Deer migration","A huge group of deer are migrating, whether part of their annual routine, or something more extraordinary",1466.93,726.23,-23.28,52.47
+marker70,dances,💃🏽,"Fivesoliton festival","A festival has been organised at Fivesoliton as a chance to gather the foreign dignitaries of the area together to be merry, make alliances and scheme around the crisis",962.93,632.24,-15.41,10.29
+marker71,mirage,💦,"Entrancing mirage","This entrancing mirage has been luring travellers out of their way for eons",1207.2,517.2,-5.78,30.73
+marker72,portals,🌀,"Light's Portal","<p>An element of the magic portal system connecting major cities. The newest portal in the dominion built to cater the new King of Golemia.</p>",32.3,143.9,25.46,-67.6
+marker73,portals,🌀,"Torkhampsea Portal","An element of the magic portal system connecting major cities. The portals were installed centuries ago, but still work fine",433.3,651.68,-17.04,-34.04
+marker74,portals,🌀,"Royal Portal","An element of the magic portal system connecting major cities. The portals were installed centuries ago, but still work fine",1626.9,358.3,7.51,65.86
+marker75,portals,🌀,"Albar Portal","An element of the magic portal system connecting major cities. The portals were installed centuries ago, but still work fine",1262.3,732.7,-23.82,35.34
+marker76,portals,🌀,"Skej'jess Portal","An element of the magic portal system connecting major cities. The portals were installed centuries ago, but still work fine",276.8,375.8,6.05,-47.13
+marker77,portals,🌀,"Cudmin Portal","An element of the magic portal system connecting major cities. The portals were installed centuries ago, but still work fine",201.5,552.5,-8.74,-53.44
+marker78,portals,🌀,"Frozen Portal","An element of the magic portal system connecting major cities. The portals were installed centuries ago, but still work fine",1428.5,211,19.84,49.25
+marker79,portals,🌀,"Invero Portal","An element of the magic portal system connecting major cities. The portals were installed centuries ago, but still work fine",306.5,71,31.56,-44.65
+marker80,portals,🌀,"Cockingra Portal","An element of the magic portal system connecting major cities. The portals were installed centuries ago, but still work fine",764.5,529,-6.77,-6.32
+marker81,portals,🌀,"Pike's Portal","An element of the magic portal system connecting major cities. The portals were installed centuries ago, but still work fine",63.1,719.7,-22.73,-65.02
+marker82,rifts,🎆,"Interdimensional Rift","A rumoured interdimensional rift in this area is causing cracks in reality itself to form.",1433.22,320.38,10.69,49.65
+marker83,rifts,🎆,"Ancient Rift","A rumoured ancient rift in this area is causing the life of nearby plants to wither and decay.",457.56,734.69,-23.98,-32.01
+marker84,Light's Landing,🏰,"Light's Landing","<p>The castle where King Light resides formed in the valley created between the two split pieces of the previous King of Golemia.&nbsp;</p>",54.2,156.2,24.43,-65.76
+marker85,The Phoenix Forge,🔥,"The Phoenix Forge","<p>The Great Phoenix Blazen, the personal pet of Flamos the Deity of Fire, has set it's place in mountains of the beyond. The Forge that allows reincarnation is set.</p>",1102.9,154.6,24.56,22
+marker86,The Phoenix Forge,🔥,Unknown,,816.94,177.65,22.63,-1.93

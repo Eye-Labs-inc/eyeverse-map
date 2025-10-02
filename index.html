@@ -3,6 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
     <title>Eyeverse World Map</title>
     <link rel="stylesheet" href="styles.css">
     <style>
@@ -474,22 +477,6 @@
         }
         
         
-        // Apply boundary constraints to keep map within visible area
-        function applyBoundaryConstraints() {
-            const containerRect = canvas.parentElement.getBoundingClientRect();
-            
-            // Calculate how much the zoomed canvas extends beyond the container
-            const scaledWidth = canvas.width * zoom;
-            const scaledHeight = canvas.height * zoom;
-            
-            // Calculate maximum pan distances to keep canvas within container
-            const maxPanX = Math.max(0, (scaledWidth - containerRect.width) / 2);
-            const maxPanY = Math.max(0, (scaledHeight - containerRect.height) / 2);
-            
-            // Constrain pan values to keep map within bounds
-            panX = Math.max(-maxPanX, Math.min(maxPanX, panX));
-            panY = Math.max(-maxPanY, Math.min(maxPanY, panY));
-        }
         
         // Update pan button states based on zoom level
         function updatePanButtonStates() {
@@ -529,8 +516,8 @@
             panY = canvasCenterY - (canvasCenterY - panY) * zoomRatio;
             zoom = newZoom;
             
-            // Apply boundary constraints after zoom
-            applyBoundaryConstraints();
+            // Don't apply boundary constraints during zoom - only during pan
+            // applyBoundaryConstraints();
             
             loadVisualization();
             updatePanButtonStates();
@@ -549,8 +536,8 @@
             panY = canvasCenterY - (canvasCenterY - panY) * zoomRatio;
             zoom = newZoom;
             
-            // Apply boundary constraints after zoom
-            applyBoundaryConstraints();
+            // Don't apply boundary constraints during zoom - only during pan
+            // applyBoundaryConstraints();
             
             loadVisualization();
             updatePanButtonStates();
@@ -560,7 +547,6 @@
             if (zoom <= 1.0) return; // Don't pan when fully zoomed out
             
             panY += 50;
-            applyBoundaryConstraints(); // Apply boundaries after pan
             loadVisualization();
         }
         
@@ -568,7 +554,6 @@
             if (zoom <= 1.0) return; // Don't pan when fully zoomed out
             
             panY -= 50;
-            applyBoundaryConstraints(); // Apply boundaries after pan
             loadVisualization();
         }
         
@@ -576,7 +561,6 @@
             if (zoom <= 1.0) return; // Don't pan when fully zoomed out
             
             panX += 50;
-            applyBoundaryConstraints(); // Apply boundaries after pan
             loadVisualization();
         }
         
@@ -584,7 +568,6 @@
             if (zoom <= 1.0) return; // Don't pan when fully zoomed out
             
             panX -= 50;
-            applyBoundaryConstraints(); // Apply boundaries after pan
             loadVisualization();
         }
         

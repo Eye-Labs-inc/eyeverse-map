@@ -327,7 +327,7 @@
                     // Rotation: rotate camera around the look-at target
                 const spherical = new THREE.Spherical();
                     spherical.setFromVector3(camera.position.sub(lookAtTarget));
-                spherical.theta -= deltaX * 0.01;
+                spherical.theta += deltaX * 0.01;
                 spherical.phi += deltaY * 0.01;
                 spherical.phi = Math.max(0.1, Math.min(Math.PI - 0.1, spherical.phi));
                 

@@ -1,31 +1,32 @@
-# Eyeverse World - 3D Terrain Visualization
+# Eyeverse World Map
 
-A web-based 3D terrain visualization system for the Eyeverse fantasy world, featuring interactive maps, elevation data, and geographic overlays.
+A comprehensive web-based visualization system for the Eyeverse fantasy world, featuring interactive 2D/3D maps, elevation data, and geographic overlays including landmarks, settlements, and cultural regions.
 
 ## 🗂️ Project Structure
 
 ```
-eyeverse-world/
-├── index.html                 # Home page (Data Explorer)
-├── 2d-map-view.html           # 2D terrain visualization with overlays
+eyeverse-map/
+├── index.html                 # 2D Map View (Main interactive map)
+├── data-explorer.html         # Data Explorer (Statistics and analysis)
 ├── 3d-terrain-preview.html    # 3D terrain visualization
 ├── styles.css                 # Global styles and theme
 ├── map.webp                   # Base world map image
-├── package.json               # Project metadata
 └── data/
     ├── elevation/             # Elevation data files
     │   ├── eyeverse-elevation-optimized.bin
     │   ├── eyeverse-elevation-optimized-metadata.json
     │   ├── eyeverse-elevation-new.bin
-    │   └── eyeverse-elevation-new-metadata.json
+    │   ├── eyeverse-elevation-new-metadata.json
+    │   └── 3d-map.obj
     └── map-layers/            # Geographic data layers
         ├── biomes.geojson
         ├── cultures.geojson
         ├── religions.geojson
         ├── rivers.geojson
+        ├── routes.geojson
         ├── states.geojson
         ├── towns_reprojected.geojson
-        └── [additional route and marker files]
+        └── markers.geojson
 ```
 
 ## 🚀 Getting Started
@@ -37,27 +38,31 @@ eyeverse-world/
 
 2. **Open in browser:**
    - Navigate to `http://localhost:8000`
-   - The Data Explorer (index page) will load first
+   - The 2D Map View (main interactive map) will load first
 
 ## 📊 Features
 
-### Data Explorer (`index.html`)
-- Interactive exploration of world statistics
-- Elevation data analysis
-- Biome and state information
-- Real-time data visualization
+### 2D Map View (`index.html`)
+- Interactive 2D map with zoom and pan controls
+- Multiple visualization modes:
+  - **Map**: Base terrain view
+  - **Regions**: Political state boundaries
+  - **Cultures**: Cultural territories with color coding
+  - **Beliefs**: Religious regions and territories
+  - **Biomes**: Ecological zones and environments
+  - **Settlements**: Cities, towns, and population centers
+  - **Landmarks**: Points of interest including dungeons, battlefields, mines, and more
+  - **Rivers**: Water systems and waterways
+  - **Trade Routes**: Economic connections and trade paths
+- Hover tooltips with detailed information
+- Responsive controls and legend system
 
-### 2D Terrain Visualizer (`2d-map-view.html`)
-- Base terrain rendering with elevation mapping
-- Interactive overlay layers:
-  - Cultures (color-coded regions)
-  - Religions (belief system territories)
-  - States (political boundaries)
-  - Biomes (ecological zones)
-  - Rivers (water systems)
-  - Trade Routes (economic connections)
-- Hover information and dynamic scaling
-- Coordinate display and interactive controls
+### Data Explorer (`data-explorer.html`)
+- Interactive exploration of world statistics
+- Elevation data analysis and visualization
+- Settlement and population statistics
+- Biome, culture, and religion breakdowns
+- Real-time data visualization with cards and grids
 
 ### 3D Terrain Preview (`3d-terrain-preview.html`)
 - Three.js-powered 3D terrain visualization
@@ -65,13 +70,6 @@ eyeverse-world/
 - Interactive camera controls (mouse drag to rotate)
 - Optimized rendering with proper world aspect ratio
 - View mode controls
-
-## 🎨 Design System
-
-- **Glass-morphism UI** with consistent styling
-- **VT323 font** for the "Eyeverse World" title
-- **Responsive design** with modern CSS variables
-- **Consistent navigation** across all pages
 
 ## 📁 Data Organization
 
@@ -82,8 +80,9 @@ eyeverse-world/
 
 ### Map Layers (`data/map-layers/`)
 - **GeoJSON format** for geographic features
-- **Consolidated structure** - no more duplicate folders
-- **Organized by feature type** (biomes, cultures, etc.)
+- **Organized by feature type**: biomes, cultures, religions, states, settlements, landmarks, rivers, and trade routes
+- **Markers data** includes dungeons, battlefields, mines, lighthouses, sacred sites, and other points of interest
+- **Consistent coordinate system** across all layers
 
 ## 🛠️ Technical Details
 
@@ -94,9 +93,9 @@ eyeverse-world/
 
 ## 🌐 Navigation
 
-- **Home/Data Explorer:** `index.html`
-- **2D Terrain View:** `terrain-visualizer.html`
-- **3D Terrain View:** `3d-terrain-preview.html`
-- **Clickable logo** returns to home page
+- **2D Map View:** `index.html` (Main interactive map)
+- **Data Explorer:** `data-explorer.html` (Statistics and analysis)
+- **3D Terrain View:** `3d-terrain-preview.html` (3D visualization)
+- **Clickable "Eyeverse World Map" title** returns to 2D Map View
 
-All pages feature consistent navigation and styling.
+All pages feature consistent navigation with active state indicators and the VT323 font for the title.

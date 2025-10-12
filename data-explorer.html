@@ -1,126 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="data-explorer-view">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eyeverse World Map</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <style>
-        /* Data Explorer specific overrides */
-        body {
-            background: var(--bg-secondary);
-        }
-        
-        .data-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: var(--spacing-xl);
-            margin-bottom: var(--spacing-xl);
-            align-items: stretch;
-        }
-        
-        .data-card {
-            background: var(--surface-primary);
-            padding: var(--spacing-lg);
-            border-radius: var(--radius-md);
-            backdrop-filter: blur(20px);
-            display: flex;
-            flex-direction: column;
-            min-height: 150px;
-            border: 1px solid var(--border-primary);
-            box-shadow: var(--shadow-lg);
-            transition: all var(--transition-normal);
-        }
-        
-        .data-card:hover {
-            background: var(--surface-hover);
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-xl);
-        }
-        
-        .data-card h3 {
-            margin-top: 0;
-            color: #f0f0f0;
-            font-size: 1.4rem;
-            font-weight: 600;
-        }
-        
-        .stat-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: var(--spacing-sm);
-            margin-top: var(--spacing-xs);
-        }
-        
-        .stat-item {
-            background: var(--surface-secondary);
-            padding: var(--spacing-md);
-            border-radius: var(--radius-sm);
-            text-align: center;
-            border: 1px solid var(--border-secondary);
-        }
-        
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-        
-        .settlement-list {
-            max-height: 300px;
-            overflow-y: auto;
-            background: var(--surface-secondary);
-            border-radius: var(--radius-sm);
-            padding: var(--spacing-md);
-            border: 1px solid var(--border-secondary);
-        }
-        
-        .settlement-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: var(--spacing-xs) 0;
-            border-bottom: 1px solid var(--border-secondary);
-        }
-        
-        .settlement-name {
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-        
-        .settlement-pop, .list-info {
-            color: #f0f0f0;
-            font-size: 12px;
-        }
-        
-        .biome-list, .culture-list, .religion-list, .settlement-list, .region-list {
-            height: auto;
-            min-height: 250px;
-            max-height: 450px;
-            overflow-y: auto;
-            background: var(--surface-secondary);
-            border-radius: var(--radius-sm);
-            padding: var(--spacing-md);
-            flex: 1;
-            border: 1px solid var(--border-secondary);
-        }
-        
-        .list-item {
-            padding: var(--spacing-xs) 0;
-            border-bottom: 1px solid var(--border-secondary);
-            display: flex;
-            justify-content: space-between;
-        }
-        
-        .color-indicator {
-            width: 20px;
-            height: 20px;
-            border-radius: var(--radius-sm);
-            display: inline-block;
-            margin-right: var(--spacing-sm);
-            border: 1px solid var(--border-primary);
-        }
-    </style>
 </head>
 <body>
     <nav class="navigation">

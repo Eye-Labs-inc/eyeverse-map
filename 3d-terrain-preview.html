@@ -1,135 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="terrain-3d-view">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eyeverse World Map</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <style>
-        /* 3D View specific overrides */
-        body {
-            background: var(--bg-primary);
-            overflow: hidden;
-        }
-        
-        #container {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-        }
-        
-        
-        #controls {
-            position: absolute;
-            top: var(--spacing-lg);
-            right: var(--spacing-lg);
-            background: var(--surface-primary);
-            padding: var(--spacing-sm);
-            border-radius: var(--radius-md);
-            backdrop-filter: blur(20px);
-            z-index: 100;
-            border: 1px solid var(--border-primary);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        .control-group {
-            margin-bottom: 0;
-        }
-        
-        select {
-            width: 100%;
-            padding: var(--spacing-sm) var(--spacing-md);
-            border: 1px solid var(--border-primary);
-            border-radius: var(--radius-sm);
-            background: var(--surface-secondary);
-            color: var(--text-primary);
-            font-size: 14px;
-            backdrop-filter: blur(10px);
-            transition: all var(--transition-normal);
-        }
-        
-        .legend {
-            margin-top: var(--spacing-sm);
-            background: var(--surface-secondary);
-            padding: var(--spacing-sm);
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border-secondary);
-            display: none;
-        }
-        
-        .loading-indicator {
-            margin-top: var(--spacing-sm);
-            padding: var(--spacing-sm);
-            text-align: center;
-            color: var(--text-secondary);
-            font-style: italic;
-        }
-        
-        .legend h3 {
-            margin: 0 0 var(--spacing-sm) 0;
-            font-size: var(--font-size-md);
-            color: var(--text-primary);
-        }
-        
-        .legend-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: var(--spacing-xs);
-            font-size: var(--font-size-sm);
-            color: var(--text-secondary);
-        }
-        
-        .legend-color {
-            width: 16px;
-            height: 16px;
-            border-radius: var(--radius-sm);
-            margin-right: var(--spacing-sm);
-            border: 1px solid var(--border-primary);
-        }
-        
-        select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(177, 2, 2, 0.2);
-        }
-        
-        #loading {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            text-align: center;
-            z-index: 200;
-            background: var(--surface-primary);
-            padding: var(--spacing-xl);
-            border-radius: var(--radius-md);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-primary);
-            box-shadow: var(--shadow-lg);
-        }
-        
-        #error {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(244, 67, 54, 0.2);
-            color: #f44336;
-            padding: var(--spacing-lg);
-            border-radius: var(--radius-md);
-            text-align: center;
-            z-index: 200;
-            display: none;
-            border: 1px solid rgba(244, 67, 54, 0.3);
-            backdrop-filter: blur(20px);
-        }
-        
-        #canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-    </style>
 </head>
 <body>
     <nav class="navigation">
@@ -161,6 +39,13 @@
                     <option value="wireframe">Wireframe</option>
                 </select>
             </div>
+            <div style="margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.7); border-radius: 4px; font-size: 11px; color: rgba(255,255,255,0.9); line-height: 1.6;">
+                <div style="font-weight: 600; margin-bottom: 4px; font-size: 12px;">🎮 Controls</div>
+                <div><strong>Rotate:</strong> Left Click + Drag</div>
+                <div><strong>Pan:</strong> WASD or Arrow Keys</div>
+                <div><strong>Pan:</strong> Shift + Drag</div>
+                <div><strong>Zoom:</strong> Mouse Wheel</div>
+            </div>
             <div id="loading-indicator" class="loading-indicator" style="display: none;">
                 <span>Loading...</span>
             </div>
@@ -186,7 +71,7 @@
                 console.log('Loading metadata and settlement data for 3D visualization...');
                 const [metadataResponse, townsResponse] = await Promise.all([
                     fetch('data/elevation/eyeverse-elevation-optimized-metadata.json'),
-                    fetch('data/map-layers/towns_reprojected.geojson')
+                    fetch('data/map-layers/towns_3d.geojson')
                 ]);
                 
                 if (!metadataResponse.ok) {
@@ -310,28 +195,31 @@
                     // Panning: move the look-at target and camera together
                     const panSpeed = 0.5;
                     const right = new THREE.Vector3();
-                    const up = new THREE.Vector3();
+                    const up = new THREE.Vector3(0, 1, 0);
                     
-                    // Calculate right and up vectors
-                    camera.getWorldDirection(new THREE.Vector3());
-                    right.crossVectors(camera.up, new THREE.Vector3(0, 0, -1)).normalize();
-                    up.copy(camera.up).normalize();
+                    // Get camera's right vector
+                    camera.getWorldDirection(right);
+                    right.cross(camera.up).normalize();
                     
-                    // Pan the look-at target
-                    lookAtTarget.add(right.multiplyScalar(-deltaX * panSpeed));
-                    lookAtTarget.add(up.multiplyScalar(deltaY * panSpeed));
+                    // Pan both camera and look-at target together
+                    const panX = right.clone().multiplyScalar(-deltaX * panSpeed);
+                    const panY = up.clone().multiplyScalar(deltaY * panSpeed);
                     
-                    // Update camera to look at new target
+                    camera.position.add(panX).add(panY);
+                    lookAtTarget.add(panX).add(panY);
+                    
                     camera.lookAt(lookAtTarget);
                 } else {
                     // Rotation: rotate camera around the look-at target
-                const spherical = new THREE.Spherical();
-                    spherical.setFromVector3(camera.position.sub(lookAtTarget));
-                spherical.theta += deltaX * 0.01;
-                spherical.phi += deltaY * 0.01;
-                spherical.phi = Math.max(0.1, Math.min(Math.PI - 0.1, spherical.phi));
-                
-                    camera.position.setFromSpherical(spherical).add(lookAtTarget);
+                    const spherical = new THREE.Spherical();
+                    const offset = new THREE.Vector3().copy(camera.position).sub(lookAtTarget);
+                    spherical.setFromVector3(offset);
+                    spherical.theta += deltaX * 0.01;
+                    spherical.phi += deltaY * 0.01;
+                    spherical.phi = Math.max(0.1, Math.min(Math.PI - 0.1, spherical.phi));
+                    
+                    offset.setFromSpherical(spherical);
+                    camera.position.copy(lookAtTarget).add(offset);
                     camera.lookAt(lookAtTarget);
                 }
                 
@@ -357,6 +245,55 @@
             // Prevent context menu on right click
             document.addEventListener('contextmenu', (event) => {
                 event.preventDefault();
+            });
+            
+            // Add keyboard controls for panning
+            document.addEventListener('keydown', (event) => {
+                const panSpeed = 10;
+                const right = new THREE.Vector3();
+                const forward = new THREE.Vector3();
+                
+                // Calculate camera's right and forward vectors for panning
+                camera.getWorldDirection(forward);
+                forward.y = 0; // Keep panning horizontal
+                forward.normalize();
+                right.crossVectors(camera.up, forward).normalize();
+                
+                let panVector = null;
+                
+                switch(event.key) {
+                    case 'ArrowLeft':
+                    case 'a':
+                    case 'A':
+                        panVector = right.clone().multiplyScalar(-panSpeed);
+                        event.preventDefault();
+                        break;
+                    case 'ArrowRight':
+                    case 'd':
+                    case 'D':
+                        panVector = right.clone().multiplyScalar(panSpeed);
+                        event.preventDefault();
+                        break;
+                    case 'ArrowUp':
+                    case 'w':
+                    case 'W':
+                        panVector = forward.clone().multiplyScalar(panSpeed);
+                        event.preventDefault();
+                        break;
+                    case 'ArrowDown':
+                    case 's':
+                    case 'S':
+                        panVector = forward.clone().multiplyScalar(-panSpeed);
+                        event.preventDefault();
+                        break;
+                }
+                
+                if (panVector) {
+                    // Pan both camera and look-at target
+                    camera.position.add(panVector);
+                    lookAtTarget.add(panVector);
+                    camera.lookAt(lookAtTarget);
+                }
             });
         }
         
@@ -521,8 +458,8 @@
         function addSettlements() {
             if (!metadata.burgs) return;
             
-            const settlementGeometry = new THREE.SphereGeometry(1, 8, 6);
-            const capitalGeometry = new THREE.SphereGeometry(2, 12, 8); // Larger, more detailed for capitals
+            const settlementGeometry = new THREE.SphereGeometry(3, 8, 6); // Increased from 1 to 3
+            const capitalGeometry = new THREE.SphereGeometry(5, 12, 8); // Increased from 2 to 5 for capitals
             
             settlements = new THREE.Group();
             settlements.name = 'settlements';
@@ -725,8 +662,8 @@
                 normalizedLon = (lon - settlementMinLon) / (settlementMaxLon - settlementMinLon);
                 normalizedLat = (lat - settlementMinLat) / (settlementMaxLat - settlementMinLat);
                 
-                // Settlements use larger scale factor to extend beyond boundaries
-                scaleFactor = 1.6; // Scale up by 60% to extend beyond boundaries
+                // Settlements use standard scale factor
+                scaleFactor = 1.0; // Use standard scale without extra stretch
             }
             
             // Map to OBJ model coordinate space with appropriate scaling

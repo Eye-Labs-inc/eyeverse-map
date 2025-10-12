@@ -1,0 +1,12 @@
+# Ignore macOS system files
+.DS_Store
+
+# Add files or folders you want git to ignore, for example:
+node_modules/
+.env
+.DS_Store
+*.log
+
+# Backup files
+*.backup
+**/*.backup

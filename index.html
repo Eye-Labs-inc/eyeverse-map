@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="map-2d-view">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,245 +7,10 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     <title>Eyeverse World Map</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323:wght@400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
-    <style>
-        /* Terrain Visualizer specific overrides */
-        body {
-            background: var(--bg-tertiary);
-        }
-        
-        .tooltip a {
-            color: #87CEEB !important;
-            text-decoration: underline !important;
-            pointer-events: auto !important;
-        }
-        
-        .tooltip a:hover {
-            color: #ADD8E6 !important;
-        }
-        
-        .controls {
-            padding: var(--spacing-sm) var(--spacing-md);
-            margin-bottom: var(--spacing-md);
-            width: 100%;
-        }
-        
-        select, input[type="range"], button {
-            padding: var(--spacing-sm) var(--spacing-md);
-            border: 1px solid var(--border-primary);
-            border-radius: var(--radius-sm);
-            background: var(--surface-primary);
-            color: var(--text-primary);
-            font-size: 14px;
-        }
-        
-        /* Use viz-btn from main styles.css */
-        
-        /* Use legend styles from main styles.css */
-        
-        .legend-content {
-            display: flex;
-            flex-wrap: wrap;
-            gap: var(--spacing-sm);
-            align-items: flex-start;
-        }
-        
-        button {
-            background: var(--primary-color);
-            color: white;
-            cursor: pointer;
-            transition: all var(--transition-normal);
-        }
-        
-        button:hover {
-            background: var(--primary-dark);
-            transform: translateY(-2px);
-        }
-        
-        button:disabled {
-            background: #666;
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
-        
-        /* Use canvas-container from main styles.css */
-        
-        canvas {
-            width: 100%;
-            height: auto;
-            display: block;
-            max-width: 100%;
-            max-height: 100%;
-        }
-        
-        .canvas-container {
-            overflow: hidden;
-        }
-        
-        /* Map Controls Overlay */
-        .map-controls {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            z-index: 10;
-        }
-        
-        .pan-controls {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-        }
-        
-        .pan-row {
-            display: flex;
-            gap: 4px;
-        }
-        
-        .zoom-controls {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-        }
-        
-        .zoom-row {
-            display: flex;
-            gap: 8px;
-        }
-        
-        .zoom-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.95);
-            border: 3px solid #dc2626;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all var(--transition-normal);
-            backdrop-filter: blur(15px);
-        }
-        
-        .zoom-btn:hover {
-            background: #dc2626;
-            border-color: #b91c1c;
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
-        }
-        
-        .zoom-btn .icon {
-            font-size: 18px;
-            font-weight: bold;
-            color: #dc2626;
-        }
-        
-        .zoom-btn:hover .icon {
-            color: white;
-        }
-        
-        .zoom-btn.reset {
-            background: rgba(255, 255, 255, 0.95);
-            border: 3px solid #dc2626;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-            width: 40px;
-            height: 40px;
-        }
-        
-        .zoom-btn.reset:hover {
-            background: #dc2626;
-            border-color: #b91c1c;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
-            transform: scale(1.1);
-        }
-        
-        .zoom-btn.reset .icon {
-            color: #dc2626;
-            font-size: 18px;
-            font-weight: bold;
-        }
-        
-        .zoom-btn.reset:hover .icon {
-            color: white;
-        }
-        
-        .pan-btn {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.95);
-            border: 3px solid #dc2626;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all var(--transition-normal);
-            backdrop-filter: blur(15px);
-        }
-        
-        .pan-btn:hover {
-            background: #dc2626;
-            border-color: #b91c1c;
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5);
-        }
-        
-        .pan-btn .icon {
-            font-size: 18px;
-            font-weight: bold;
-            color: #dc2626;
-        }
-        
-        .pan-btn:hover .icon {
-            color: white;
-        }
-        
-        .info-panel {
-            background: var(--surface-primary);
-            padding: var(--spacing-lg);
-            border-radius: var(--radius-md);
-            margin-top: var(--spacing-lg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--border-primary);
-        }
-        
-        .stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: var(--spacing-md);
-            margin-top: var(--spacing-md);
-        }
-        
-        .stat-item {
-            background: var(--surface-secondary);
-            padding: var(--spacing-md);
-            border-radius: var(--radius-sm);
-            text-align: center;
-            border: 1px solid var(--border-secondary);
-        }
-        
-        .stat-value {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary-color);
-        }
-        
-        .loading {
-            text-align: center;
-            padding: var(--spacing-xxl);
-            font-size: 18px;
-        }
-        
-        /* Use error styles from main styles.css */
-        
-        /* Use tooltip styles from main styles.css */
-    </style>
 </head>
 <body>
     <nav class="navigation">
@@ -278,11 +43,11 @@
                 <button class="viz-btn" data-mode="biomes" onclick="setVizMode('biomes')">
                     <span class="icon">🌲</span> Biomes
                 </button>
+                <button class="viz-btn" data-mode="markers" onclick="setVizMode('markers')">
+                    <span class="icon">📍</span> Landmarks
+                </button>
                 <button class="viz-btn" data-mode="settlements" onclick="setVizMode('settlements')">
                     <span class="icon">🏘️</span> Settlements
-                </button>
-                <button class="viz-btn" data-mode="markers" onclick="setVizMode('markers')">
-                    <span class="icon">📍</span> Markers
                 </button>
                 <button class="viz-btn" data-mode="rivers" onclick="setVizMode('rivers')">
                     <span class="icon">🌊</span> Rivers
@@ -360,6 +125,9 @@
         let markersData = null;
         let tooltipHideTimeout = null;
         let currentMarkers = null;
+        let currentRivers = null;
+        let currentRoutes = null;
+        let hoveredLineFeature = null;
         
         // Zoom and pan state
         let zoom = 1.0;
@@ -393,6 +161,12 @@
             }
             if (!['states', 'cultures', 'religions', 'biomes'].includes(mode)) {
                 currentPolygonData = null;
+            }
+            if (mode !== 'rivers') {
+                currentRivers = null;
+            }
+            if (mode !== 'routes') {
+                currentRoutes = null;
             }
             hideTooltip();
             
@@ -457,6 +231,30 @@
                     hideTooltip();
                 }
             }
+            // Handle rivers
+            else if (currentVizMode === 'rivers' && currentRivers) {
+                const river = findLineFeatureAt(x, y, currentRivers, 'rivers');
+                
+                if (river && river !== hoveredLineFeature) {
+                    hoveredLineFeature = river;
+                    showLineTooltip(event, river, 'river');
+                } else if (!river && hoveredLineFeature) {
+                    hoveredLineFeature = null;
+                    hideTooltip();
+                }
+            }
+            // Handle trade routes
+            else if (currentVizMode === 'routes' && currentRoutes) {
+                const route = findLineFeatureAt(x, y, currentRoutes, 'routes');
+                
+                if (route && route !== hoveredLineFeature) {
+                    hoveredLineFeature = route;
+                    showLineTooltip(event, route, 'route');
+                } else if (!route && hoveredLineFeature) {
+                    hoveredLineFeature = null;
+                    hideTooltip();
+                }
+            }
         }
         
         // Handle mouse leave
@@ -467,6 +265,10 @@
             }
             if (hoveredPolygon) {
                 hoveredPolygon = null;
+                hideTooltip();
+            }
+            if (hoveredLineFeature) {
+                hoveredLineFeature = null;
                 hideTooltip();
             }
             // Also clear any marker hover state
@@ -575,9 +377,10 @@
         function findSettlementAt(canvasX, canvasY) {
             for (const settlement of currentSettlements) {
                 // Convert settlement coordinates to canvas coordinates
-                // Settlement range: longitude -70.23 to +70.05, latitude -36.24 to +37.09
-                let x = ((settlement.lon + 70.23) / 140.28) * canvas.width; // Map -70.23 to +70.05 longitude to canvas width
-                let y = ((37.09 - settlement.lat) / 73.33) * canvas.height; // Map -36.24 to +37.09 latitude to canvas height (flipped)
+                // Settlement range: longitude -171.41 to +171.01, latitude -92.21 to +92.41 (aligned with map bounds)
+                // Apply inverse squeeze/offset transformation to align with full canvas
+                let x = (((settlement.lon + 171.41) / 342.42) * canvas.width - 15) / 0.97;
+                let y = (((92.41 - settlement.lat) / 184.62) * canvas.height - 15) / 0.91;
                 
                 // Apply zoom and pan transformation
                 const transformed = applyInverseTransform(x, y);
@@ -599,6 +402,86 @@
             return null;
         }
 
+        // Find line feature at given canvas coordinates (for rivers and routes)
+        function findLineFeatureAt(canvasX, canvasY, features, layerType) {
+            const threshold = 8; // Pixels distance from line to trigger hover
+            
+            for (const feature of features) {
+                let coordinates = [];
+                
+                if (feature.geometry.type === 'LineString') {
+                    coordinates = [feature.geometry.coordinates];
+                } else if (feature.geometry.type === 'MultiLineString') {
+                    coordinates = feature.geometry.coordinates;
+                }
+                
+                // Check each line segment
+                for (const lineCoords of coordinates) {
+                    for (let i = 0; i < lineCoords.length - 1; i++) {
+                        const coord1 = lineCoords[i];
+                        const coord2 = lineCoords[i + 1];
+                        
+                        // Convert coordinates to canvas position
+                        let x1, y1, x2, y2;
+                        
+                        if (layerType === 'rivers' || layerType === 'routes') {
+                            x1 = (((coord1[0] + 171.41) / 342.42) * canvas.width - 15) / 0.97;
+                            y1 = (((92.41 - coord1[1]) / 184.62) * canvas.height - 15) / 0.91;
+                            x2 = (((coord2[0] + 171.41) / 342.42) * canvas.width - 15) / 0.97;
+                            y2 = (((92.41 - coord2[1]) / 184.62) * canvas.height - 15) / 0.91;
+                        }
+                        
+                        // Apply zoom and pan
+                        const t1 = applyInverseTransform(x1, y1);
+                        const t2 = applyInverseTransform(x2, y2);
+                        x1 = t1.x; y1 = t1.y;
+                        x2 = t2.x; y2 = t2.y;
+                        
+                        // Calculate distance from point to line segment
+                        const dist = distanceToLineSegment(canvasX, canvasY, x1, y1, x2, y2);
+                        
+                        if (dist <= threshold) {
+                            return feature;
+                        }
+                    }
+                }
+            }
+            return null;
+        }
+        
+        // Calculate distance from point to line segment
+        function distanceToLineSegment(px, py, x1, y1, x2, y2) {
+            const A = px - x1;
+            const B = py - y1;
+            const C = x2 - x1;
+            const D = y2 - y1;
+            
+            const dot = A * C + B * D;
+            const lenSq = C * C + D * D;
+            let param = -1;
+            
+            if (lenSq !== 0) {
+                param = dot / lenSq;
+            }
+            
+            let xx, yy;
+            
+            if (param < 0) {
+                xx = x1;
+                yy = y1;
+            } else if (param > 1) {
+                xx = x2;
+                yy = y2;
+            } else {
+                xx = x1 + param * C;
+                yy = y1 + param * D;
+            }
+            
+            const dx = px - xx;
+            const dy = py - yy;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+        
         // Find marker at given canvas coordinates
         function findMarkerAt(canvasX, canvasY) {
             if (!currentMarkers) return null;
@@ -608,9 +491,10 @@
                 const lat = marker.geometry.coordinates[1];
                 
                 // Convert geographic coordinates to canvas coordinates
-                // Marker range: longitude -164.92 to +165.74, latitude -89.80 to +86.82
-                let x = ((lon + 164.92) / 330.66) * canvas.width;
-                let y = ((86.82 - lat) / 176.62) * canvas.height;
+                // Marker range: longitude -171.41 to +171.01, latitude -92.21 to +92.41 (aligned with map bounds)
+                // Apply inverse squeeze/offset transformation to align with full canvas
+                let x = (((lon + 171.41) / 342.42) * canvas.width - 15) / 0.97;
+                let y = (((92.41 - lat) / 184.62) * canvas.height - 15) / 0.91;
                 
                 // Apply zoom and pan transformation
                 const transformed = applyInverseTransform(x, y);
@@ -670,23 +554,26 @@
                 let canvasXi, canvasYi, canvasXj, canvasYj;
                 
                 if (layerType === 'rivers') {
-                    // Rivers coordinate range: longitude -169.00 to +169.00, latitude -90.00 to +80.48
-                    canvasXi = ((xi + 169.00) / 338.00) * canvas.width;
-                    canvasYi = ((80.48 - yi) / 170.48) * canvas.height;
-                    canvasXj = ((xj + 169.00) / 338.00) * canvas.width;
-                    canvasYj = ((80.48 - yj) / 170.48) * canvas.height;
+                    // Rivers coordinate range: longitude -171.41 to +171.01, latitude -92.21 to +92.41 (aligned with map bounds)
+                    // Apply inverse squeeze/offset transformation to align with full canvas
+                    canvasXi = (((xi + 171.41) / 342.42) * canvas.width - 15) / 0.97;
+                    canvasYi = (((92.41 - yi) / 184.62) * canvas.height - 15) / 0.91;
+                    canvasXj = (((xj + 171.41) / 342.42) * canvas.width - 15) / 0.97;
+                    canvasYj = (((92.41 - yj) / 184.62) * canvas.height - 15) / 0.91;
                 } else if (layerType === 'routes') {
-                    // Trade routes coordinate range: longitude -168.84 to +168.50, latitude -87.20 to +90.00
-                    canvasXi = ((xi + 168.84) / 337.34) * canvas.width;
-                    canvasYi = ((90.00 - yi) / 177.20) * canvas.height;
-                    canvasXj = ((xj + 168.84) / 337.34) * canvas.width;
-                    canvasYj = ((90.00 - yj) / 177.20) * canvas.height;
+                    // Trade routes coordinate range: longitude -171.41 to +171.01, latitude -92.21 to +92.41 (aligned with map bounds)
+                    // Apply inverse squeeze/offset transformation to align with full canvas
+                    canvasXi = (((xi + 171.41) / 342.42) * canvas.width - 15) / 0.97;
+                    canvasYi = (((92.41 - yi) / 184.62) * canvas.height - 15) / 0.91;
+                    canvasXj = (((xj + 171.41) / 342.42) * canvas.width - 15) / 0.97;
+                    canvasYj = (((92.41 - yj) / 184.62) * canvas.height - 15) / 0.91;
                 } else {
                     // Polygon layers coordinate range: longitude -171.41 to +171.01, latitude -92.21 to +92.41
-                    canvasXi = ((xi + 171.41) / 342.42) * canvas.width;
-                    canvasYi = ((92.41 - yi) / 184.62) * canvas.height;
-                    canvasXj = ((xj + 171.41) / 342.42) * canvas.width;
-                    canvasYj = ((92.41 - yj) / 184.62) * canvas.height;
+                    // Apply inverse squeeze/offset transformation to align with full canvas
+                    canvasXi = (((xi + 171.41) / 342.42) * canvas.width - 15) / 0.97;
+                    canvasYi = (((92.41 - yi) / 184.62) * canvas.height - 15) / 0.91;
+                    canvasXj = (((xj + 171.41) / 342.42) * canvas.width - 15) / 0.97;
+                    canvasYj = (((92.41 - yj) / 184.62) * canvas.height - 15) / 0.91;
                 }
                 
                 // Apply zoom and pan transformation
@@ -723,9 +610,24 @@
             
             document.body.appendChild(tooltip);
             
-            // Position tooltip using original mouse coordinates (no conversion needed)
-            const x = event.clientX + 10;
-            const y = event.clientY - 10;
+            // Position tooltip with smart overflow handling
+            let x = event.clientX + 10;
+            let y = event.clientY - 10;
+            
+            // Get tooltip dimensions
+            const tooltipRect = tooltip.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // Adjust if tooltip would overflow right edge
+            if (x + tooltipRect.width > viewportWidth - 10) {
+                x = event.clientX - tooltipRect.width - 10;
+            }
+            
+            // Adjust if tooltip would overflow bottom edge
+            if (y + tooltipRect.height > viewportHeight - 10) {
+                y = event.clientY - tooltipRect.height - 10;
+            }
             
             tooltip.style.left = `${x}px`;
             tooltip.style.top = `${y}px`;
@@ -787,14 +689,92 @@
             tooltip.innerHTML = content;
             document.body.appendChild(tooltip);
             
-            // Position tooltip
-            const x = event.clientX + 10;
-            const y = event.clientY - 10;
+            // Position tooltip with smart overflow handling
+            let x = event.clientX + 10;
+            let y = event.clientY - 10;
+            
+            // Get tooltip dimensions
+            const tooltipRect = tooltip.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // Adjust if tooltip would overflow right edge
+            if (x + tooltipRect.width > viewportWidth - 10) {
+                x = event.clientX - tooltipRect.width - 10;
+            }
+            
+            // Adjust if tooltip would overflow bottom edge
+            if (y + tooltipRect.height > viewportHeight - 10) {
+                y = event.clientY - tooltipRect.height - 10;
+            }
+            
             tooltip.style.left = `${x}px`;
             tooltip.style.top = `${y}px`;
             
         }
 
+        // Show tooltip for line features (rivers and routes)
+        function showLineTooltip(event, feature, type) {
+            hideTooltip();
+            
+            const tooltip = document.createElement('div');
+            tooltip.className = 'line-tooltip';
+            tooltip.style.position = 'fixed';
+            tooltip.style.background = 'rgba(0, 0, 0, 0.9)';
+            tooltip.style.color = 'white';
+            tooltip.style.padding = '8px 12px';
+            tooltip.style.borderRadius = '4px';
+            tooltip.style.fontSize = '14px';
+            tooltip.style.zIndex = '1000';
+            tooltip.style.pointerEvents = 'none';
+            
+            let content = '';
+            
+            if (type === 'river') {
+                const name = feature.properties.name || 'Unnamed River';
+                content = `
+                    <div class="tooltip-name" style="font-weight: 600;">🌊 ${name}</div>
+                `;
+            } else if (type === 'route') {
+                const name = feature.properties.name;
+                const group = feature.properties.group || 'road';
+                
+                if (name) {
+                    content = `
+                        <div class="tooltip-name" style="font-weight: 600;">🛤️ ${name}</div>
+                        <div class="tooltip-details" style="font-size: 12px; opacity: 0.9;">Type: ${group}</div>
+                    `;
+                } else {
+                    content = `<div style="font-weight: 600;">🛤️ Trade Route</div>`;
+                }
+            }
+            
+            tooltip.innerHTML = content;
+            document.body.appendChild(tooltip);
+            
+            // Position tooltip with smart overflow handling
+            let x = event.clientX + 10;
+            let y = event.clientY - 10;
+            
+            // Get tooltip dimensions
+            const tooltipRect = tooltip.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // Adjust if tooltip would overflow right edge
+            if (x + tooltipRect.width > viewportWidth - 10) {
+                x = event.clientX - tooltipRect.width - 10;
+            }
+            
+            // Adjust if tooltip would overflow bottom edge
+            if (y + tooltipRect.height > viewportHeight - 10) {
+                y = event.clientY - tooltipRect.height - 10;
+            }
+            
+            tooltip.style.left = `${x}px`;
+            tooltip.style.top = `${y}px`;
+        }
+        
         // Show tooltip for polygon
         function showPolygonTooltip(event, polygon, scaledX, scaledY) {
             hideTooltip(); // Remove any existing tooltip
@@ -835,9 +815,24 @@
             
             document.body.appendChild(tooltip);
             
-            // Position tooltip using original mouse coordinates (no conversion needed)
-            const x = event.clientX + 10;
-            const y = event.clientY - 10;
+            // Position tooltip with smart overflow handling
+            let x = event.clientX + 10;
+            let y = event.clientY - 10;
+            
+            // Get tooltip dimensions
+            const tooltipRect = tooltip.getBoundingClientRect();
+            const viewportWidth = window.innerWidth;
+            const viewportHeight = window.innerHeight;
+            
+            // Adjust if tooltip would overflow right edge
+            if (x + tooltipRect.width > viewportWidth - 10) {
+                x = event.clientX - tooltipRect.width - 10;
+            }
+            
+            // Adjust if tooltip would overflow bottom edge
+            if (y + tooltipRect.height > viewportHeight - 10) {
+                y = event.clientY - tooltipRect.height - 10;
+            }
             
             tooltip.style.left = `${x}px`;
             tooltip.style.top = `${y}px`;
@@ -854,7 +849,7 @@
                 tooltipHideTimeout = setTimeout(() => {
                     const settlementTooltip = document.getElementById('settlementTooltip');
                     const polygonTooltip = document.getElementById('polygonTooltip');
-                    const tooltips = document.querySelectorAll('.tooltip');
+                    const tooltips = document.querySelectorAll('.tooltip, .line-tooltip');
                     
                     if (settlementTooltip) {
                         settlementTooltip.remove();
@@ -862,14 +857,14 @@
                     if (polygonTooltip) {
                         polygonTooltip.remove();
                     }
-                    // Remove all tooltips with class 'tooltip' (including marker tooltips)
+                    // Remove all tooltips (including marker and line tooltips)
                     tooltips.forEach(tooltip => tooltip.remove());
                     tooltipHideTimeout = null;
                 }, delay);
             } else {
                 const settlementTooltip = document.getElementById('settlementTooltip');
                 const polygonTooltip = document.getElementById('polygonTooltip');
-                const tooltips = document.querySelectorAll('.tooltip');
+                const tooltips = document.querySelectorAll('.tooltip, .line-tooltip');
                 
                 if (settlementTooltip) {
                     settlementTooltip.remove();
@@ -877,7 +872,7 @@
                 if (polygonTooltip) {
                     polygonTooltip.remove();
                 }
-                // Remove all tooltips with class 'tooltip' (including marker tooltips)
+                // Remove all tooltips (including marker and line tooltips)
                 tooltips.forEach(tooltip => tooltip.remove());
             }
         }
@@ -1107,19 +1102,9 @@
             
             switch (mode) {
                 case 'settlements':
-                    legendHTML = `
-                        <div class="legend-content">
-                            <div class="legend-item">
-                                <div class="legend-color" style="background-color: #ffff00; border: 2px solid #ff0000;"></div>
-                                <div class="legend-label">Settlements</div>
-                    </div>
-                            <div class="legend-item">
-                                <div class="legend-color" style="background-color: #ff0000; border: 3px solid #ffff00;"></div>
-                                <div class="legend-label">Capital Cities</div>
-                </div>
-                        </div>
-                    `;
-                    break;
+                    // No legend needed - capitals are labeled on map and info shown in tooltips
+                    legendElement.style.display = 'none';
+                    return;
                 case 'markers':
                     legendHTML = `
                         <div class="legend-content">
@@ -1336,26 +1321,14 @@
                     break;
                     
                 case 'rivers':
-                    legendHTML = `
-                        <div class="legend-content">
-                            <div class="legend-item">
-                                <div class="legend-color" style="background-color: #4169E1;"></div>
-                                <div class="legend-label">River Systems</div>
-                            </div>
-                        </div>
-                    `;
-                    break;
+                    // No legend needed - river names shown in tooltips
+                    legendElement.style.display = 'none';
+                    return;
                     
                 case 'routes':
-                    legendHTML = `
-                        <div class="legend-content">
-                            <div class="legend-item">
-                                <div class="legend-color" style="background-color: #FFD700;"></div>
-                                <div class="legend-label">Trade Routes</div>
-                            </div>
-                        </div>
-                    `;
-                    break;
+                    // No legend needed - route info shown in tooltips
+                    legendElement.style.display = 'none';
+                    return;
             }
             
             legendContent.innerHTML = legendHTML;
@@ -1369,17 +1342,17 @@
                 mapImage.src = 'map.webp';
             });
             
-            // Apply same squeeze to both horizontal and vertical alignment
-            const squeezedWidth = canvas.width * 0.97;
-            const squeezedHeight = canvas.height * 0.91;
-            const offsetX = 15; // Move right
-            const offsetY = 15; // Move down
+            // Fill entire canvas with map image (no squeeze or offset)
+            const width = canvas.width;
+            const height = canvas.height;
+            const offsetX = 0;
+            const offsetY = 0;
             
             // Apply zoom and pan transformation to the base map
             const transformedOffsetX = offsetX * zoom + panX;
             const transformedOffsetY = offsetY * zoom + panY;
-            const transformedWidth = squeezedWidth * zoom;
-            const transformedHeight = squeezedHeight * zoom;
+            const transformedWidth = width * zoom;
+            const transformedHeight = height * zoom;
             
             ctx.drawImage(mapImage, transformedOffsetX, transformedOffsetY, transformedWidth, transformedHeight);
         }
@@ -1549,15 +1522,13 @@
             // Store settlements data for hover functionality
             currentSettlements = metadata.burgs;
             
-            ctx.strokeStyle = '#ff0000';
-            ctx.fillStyle = '#ffff00';
-            ctx.lineWidth = 2;
-            
+            // First pass: Draw all settlement dots
             for (const settlement of metadata.burgs) {
                 // Use settlement coordinates directly (new map data should be in correct coordinate system)
-                // Settlement range: longitude -70.23 to +70.05, latitude -36.24 to +37.09
-                let x = ((settlement.lon + 70.23) / 140.28) * canvas.width; // Map -70.23 to +70.05 longitude to canvas width
-                let y = ((37.09 - settlement.lat) / 73.33) * canvas.height; // Map -36.24 to +37.09 latitude to canvas height (flipped)
+                // Settlement range: longitude -171.41 to +171.01, latitude -92.21 to +92.41 (aligned with map bounds)
+                // Apply inverse squeeze/offset transformation to align with full canvas
+                let x = (((settlement.lon + 171.41) / 342.42) * canvas.width - 15) / 0.97;
+                let y = (((92.41 - settlement.lat) / 184.62) * canvas.height - 15) / 0.91;
                 
                 // Apply zoom and pan transformation
                 const transformed = applyInverseTransform(x, y);
@@ -1573,15 +1544,10 @@
                     ctx.strokeStyle = '#ffff00';
                     ctx.lineWidth = 3;
                     const radius = Math.max(6, Math.log10(settlement.population || 1000) * 2.5);
-                ctx.beginPath();
+                    ctx.beginPath();
                     ctx.arc(x, y, radius, 0, 2 * Math.PI);
-                ctx.fill();
-                ctx.stroke();
-                
-                    // Draw capital city name
-                    ctx.fillStyle = '#ffffff';
-                    ctx.font = 'bold 14px Arial';
-                    ctx.fillText(settlement.name, x + radius + 5, y - radius - 5);
+                    ctx.fill();
+                    ctx.stroke();
                 } else {
                     // Regular settlements: yellow fill with red border, smaller size
                     ctx.fillStyle = '#ffff00';
@@ -1592,13 +1558,25 @@
                     ctx.arc(x, y, radius, 0, 2 * Math.PI);
                     ctx.fill();
                     ctx.stroke();
+                }
+            }
+            
+            // Second pass: Draw only capital city names on top
+            for (const settlement of metadata.burgs) {
+                if (settlement.capital) {
+                    let x = (((settlement.lon + 171.41) / 342.42) * canvas.width - 15) / 0.97;
+                    let y = (((92.41 - settlement.lat) / 184.62) * canvas.height - 15) / 0.91;
                     
-                    // Draw settlement name for large settlements only
-                if (settlement.population > 10000) {
+                    const transformed = applyInverseTransform(x, y);
+                    x = transformed.x;
+                    y = transformed.y;
+                    
+                    const radius = Math.max(6, Math.log10(settlement.population || 1000) * 2.5);
+                    
+                    // Draw capital city name
                     ctx.fillStyle = '#ffffff';
-                    ctx.font = '12px Arial';
-                        ctx.fillText(settlement.name, x + radius + 5, y - radius - 5);
-                    }
+                    ctx.font = 'bold 14px Arial';
+                    ctx.fillText(settlement.name, x + radius + 5, y - radius - 5);
                 }
             }
             
@@ -1623,9 +1601,10 @@
                 const lat = marker.geometry.coordinates[1];
                 
                 // Convert geographic coordinates to canvas coordinates
-                // Marker range: longitude -164.92 to +165.74, latitude -89.80 to +86.82
-                let x = ((lon + 164.92) / 330.66) * canvas.width;
-                let y = ((86.82 - lat) / 176.62) * canvas.height;
+                // Marker range: longitude -171.41 to +171.01, latitude -92.21 to +92.41 (aligned with map bounds)
+                // Apply inverse squeeze/offset transformation to align with full canvas
+                let x = (((lon + 171.41) / 342.42) * canvas.width - 15) / 0.97;
+                let y = (((92.41 - lat) / 184.62) * canvas.height - 15) / 0.91;
                 
                 // Apply zoom and pan transformation
                 const transformed = applyInverseTransform(x, y);
@@ -1905,6 +1884,8 @@
                 const response = await fetch('data/map-layers/rivers.geojson');
                 const riverData = await response.json();
                 
+                // Store river data for hover functionality
+                currentRivers = riverData.features;
                 
                 ctx.strokeStyle = '#4169E1';
                 ctx.lineWidth = 3;
@@ -1933,6 +1914,8 @@
                 const response = await fetch('data/map-layers/routes.geojson');
                 const routeData = await response.json();
                 
+                // Store route data for hover functionality
+                currentRoutes = routeData.features;
                 
                 ctx.strokeStyle = '#FFD700';
                 ctx.lineWidth = 2;
@@ -1962,8 +1945,9 @@
             for (let i = 0; i < coordinates.length; i++) {
                 // Use longitude/latitude coordinates from GeoJSON with actual ranges
                 // GeoJSON range: longitude -171.41 to +171.01, latitude -92.21 to +92.41
-                let x = ((coordinates[i][0] + 171.41) / 342.42) * canvas.width; // Map -171.41 to +171.01 longitude to canvas width
-                let y = ((92.41 - coordinates[i][1]) / 184.62) * canvas.height; // Map -92.21 to +92.41 latitude to canvas height (flipped)
+                // Apply inverse squeeze/offset transformation to align with full canvas
+                let x = (((coordinates[i][0] + 171.41) / 342.42) * canvas.width - 15) / 0.97;
+                let y = (((92.41 - coordinates[i][1]) / 184.62) * canvas.height - 15) / 0.91;
                 
                 // Apply zoom and pan transformation
                 const transformed = applyInverseTransform(x, y);
@@ -1988,17 +1972,20 @@
                 let x, y;
                 
                 if (layerType === 'rivers') {
-                    // Rivers coordinate range: longitude -169.00 to +169.00, latitude -90.00 to +80.483
-                    x = ((coordinates[i][0] + 169.00) / 338.00) * canvas.width;
-                    y = ((80.483 - coordinates[i][1]) / 170.483) * canvas.height;
+                    // Rivers coordinate range: longitude -171.41 to +171.01, latitude -92.21 to +92.41 (aligned with map bounds)
+                    // Apply inverse squeeze/offset transformation to align with full canvas
+                    x = (((coordinates[i][0] + 171.41) / 342.42) * canvas.width - 15) / 0.97;
+                    y = (((92.41 - coordinates[i][1]) / 184.62) * canvas.height - 15) / 0.91;
                 } else if (layerType === 'routes') {
-                    // Trade routes coordinate range: longitude -168.84 to +168.50, latitude -87.20 to +90.00
-                    x = ((coordinates[i][0] + 168.84) / 337.34) * canvas.width;
-                    y = ((90.00 - coordinates[i][1]) / 177.20) * canvas.height;
+                    // Trade routes coordinate range: longitude -171.41 to +171.01, latitude -92.21 to +92.41 (aligned with map bounds)
+                    // Apply inverse squeeze/offset transformation to align with full canvas
+                    x = (((coordinates[i][0] + 171.41) / 342.42) * canvas.width - 15) / 0.97;
+                    y = (((92.41 - coordinates[i][1]) / 184.62) * canvas.height - 15) / 0.91;
                 } else {
                     // Polygon layers coordinate range: longitude -171.41 to +171.01, latitude -92.21 to +92.41
-                    x = ((coordinates[i][0] + 171.41) / 342.42) * canvas.width;
-                    y = ((92.41 - coordinates[i][1]) / 184.62) * canvas.height;
+                    // Apply inverse squeeze/offset transformation to align with full canvas
+                    x = (((coordinates[i][0] + 171.41) / 342.42) * canvas.width - 15) / 0.97;
+                    y = (((92.41 - coordinates[i][1]) / 184.62) * canvas.height - 15) / 0.91;
                 }
                 
                 // Apply zoom and pan transformation

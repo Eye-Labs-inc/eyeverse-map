@@ -17,100 +17,99 @@
         <div class="nav-container">
             <a href="index.html" class="nav-title">Eyeverse World Map</a>
             <div class="nav-links">
-                <a href="index.html" class="nav-link active">🗺️ 2D View</a>
-                <a href="3d-terrain-preview.html" class="nav-link">🌄 3D View</a>
-                <a href="data-explorer.html" class="nav-link">📊 Data Explorer</a>
+                <a href="index.html" class="nav-link active">2D View</a>
+                <a href="3d-terrain-preview.html" class="nav-link">3D View</a>
+                <a href="data-explorer.html" class="nav-link">Data Explorer</a>
             </div>
         </div>
     </nav>
     
     <div class="content">
         <div class="container">
-        <div class="controls">
-            <div class="viz-buttons">
-                <button class="viz-btn active" data-mode="map" onclick="setVizMode('map')">
-                    <span class="icon">🗺️</span> Map
-                </button>
-                <button class="viz-btn" data-mode="states" onclick="setVizMode('states')">
-                    <span class="icon">🏛️</span> Regions
-                </button>
-                <button class="viz-btn" data-mode="cultures" onclick="setVizMode('cultures')">
-                    <span class="icon">👥</span> Cultures
-                </button>
-                <button class="viz-btn" data-mode="religions" onclick="setVizMode('religions')">
-                    <span class="icon">⛪</span> Beliefs
-                </button>
-                <button class="viz-btn" data-mode="biomes" onclick="setVizMode('biomes')">
-                    <span class="icon">🌲</span> Biomes
-                </button>
-                <button class="viz-btn" data-mode="markers" onclick="setVizMode('markers')">
-                    <span class="icon">📍</span> Landmarks
-                </button>
-                <button class="viz-btn" data-mode="settlements" onclick="setVizMode('settlements')">
-                    <span class="icon">🏘️</span> Settlements
-                </button>
-                <button class="viz-btn" data-mode="rivers" onclick="setVizMode('rivers')">
-                    <span class="icon">🌊</span> Rivers
-                </button>
-                <button class="viz-btn" data-mode="routes" onclick="setVizMode('routes')">
-                    <span class="icon">🛤️</span> Trade Routes
-                </button>
-            </div>
-            </div>
-            
-            </div>
-            
-        <div id="legend" class="legend">
-            <div id="legendContent"></div>
-        </div>
-        
-        <div class="canvas-container">
-        <div id="loading" class="loading">
-            <div>🔄 Loading terrain data...</div>
-                <div>Please wait while we load the elevation data</div>
-        </div>
-        <div id="error" class="error" style="display: none;"></div>
-            <canvas id="terrainCanvas" style="display: none;"></canvas>
-            
-            <!-- Map Controls Overlay -->
-            <div id="mapControls" class="map-controls" style="display: none;">
-                <!-- Pan Controls -->
-                <div class="pan-controls">
-                    <button class="pan-btn" onclick="panUp()" title="Pan up">
-                        <span class="icon">↑</span>
+            <div class="controls">
+                <div class="viz-buttons">
+                    <button class="viz-btn active" data-mode="map" onclick="setVizMode('map')">
+                        <span class="icon">🗺️</span> Map
                     </button>
-                    <div class="pan-row">
-                        <button class="pan-btn" onclick="panLeft()" title="Pan left">
-                            <span class="icon">←</span>
-                        </button>
-                        <button class="pan-btn" onclick="panRight()" title="Pan right">
-                            <span class="icon">→</span>
-                        </button>
-                        </div>
-                    <button class="pan-btn" onclick="panDown()" title="Pan down">
-                        <span class="icon">↓</span>
+                    <button class="viz-btn" data-mode="states" onclick="setVizMode('states')">
+                        <span class="icon">🏛️</span> Regions
                     </button>
-                        </div>
+                    <button class="viz-btn" data-mode="cultures" onclick="setVizMode('cultures')">
+                        <span class="icon">👥</span> Cultures
+                    </button>
+                    <button class="viz-btn" data-mode="religions" onclick="setVizMode('religions')">
+                        <span class="icon">⛪</span> Beliefs
+                    </button>
+                    <button class="viz-btn" data-mode="biomes" onclick="setVizMode('biomes')">
+                        <span class="icon">🌲</span> Biomes
+                    </button>
+                    <button class="viz-btn" data-mode="markers" onclick="setVizMode('markers')">
+                        <span class="icon">📍</span> Landmarks
+                    </button>
+                    <button class="viz-btn" data-mode="settlements" onclick="setVizMode('settlements')">
+                        <span class="icon">🏘️</span> Settlements
+                    </button>
+                    <button class="viz-btn" data-mode="rivers" onclick="setVizMode('rivers')">
+                        <span class="icon">🌊</span> Rivers
+                    </button>
+                    <button class="viz-btn" data-mode="routes" onclick="setVizMode('routes')">
+                        <span class="icon">🛤️</span> Trade Routes
+                    </button>
+                </div>
+            </div>
+            
+            <div class="canvas-container">
+                <div id="loading" class="loading">
+                    <div>🔄 Loading terrain data...</div>
+                    <div>Please wait while we load the elevation data</div>
+                </div>
+                <div id="error" class="error" style="display: none;"></div>
+                <canvas id="terrainCanvas" style="display: none;"></canvas>
                 
-                <!-- Zoom Controls -->
-                <div class="zoom-controls">
-                    <div class="zoom-row">
-                        <button class="zoom-btn" onclick="zoomIn()" title="Zoom In">
-                            <span class="icon">+</span>
+                <!-- Map Controls Overlay -->
+                <div id="mapControls" class="map-controls" style="display: none;">
+                    <!-- Pan Controls -->
+                    <div class="pan-controls">
+                        <button class="pan-btn" onclick="panUp()" title="Pan up">
+                            <span class="icon">↑</span>
                         </button>
-                        <button class="zoom-btn" onclick="zoomOut()" title="Zoom Out">
-                            <span class="icon">−</span>
+                        <div class="pan-row">
+                            <button class="pan-btn" onclick="panLeft()" title="Pan left">
+                                <span class="icon">←</span>
+                            </button>
+                            <button class="pan-btn" onclick="panRight()" title="Pan right">
+                                <span class="icon">→</span>
+                            </button>
+                        </div>
+                        <button class="pan-btn" onclick="panDown()" title="Pan down">
+                            <span class="icon">↓</span>
                         </button>
+                    </div>
+                    
+                    <!-- Zoom Controls -->
+                    <div class="zoom-controls">
+                        <div class="zoom-row">
+                            <button class="zoom-btn" onclick="zoomIn()" title="Zoom In">
+                                <span class="icon">+</span>
+                            </button>
+                            <button class="zoom-btn" onclick="zoomOut()" title="Zoom Out">
+                                <span class="icon">−</span>
+                            </button>
                         </div>
-                    <button class="zoom-btn reset" onclick="resetZoom()" title="Reset Zoom">
-                        <span class="icon">R</span>
-                    </button>
-                        </div>
+                        <button class="zoom-btn reset" onclick="resetZoom()" title="Reset Zoom">
+                            <span class="icon">R</span>
+                        </button>
                     </div>
                 </div>
-                
-                        </div>
-                        </div>
+            </div>
+        </div>
+        
+        <div class="container">
+            <div id="legend" class="legend">
+                <div id="legendContent"></div>
+            </div>
+        </div>
+    </div>
 
     <script>
         let terrainData = null;
@@ -378,9 +377,11 @@
             for (const settlement of currentSettlements) {
                 // Convert settlement coordinates to canvas coordinates
                 // Settlement range: longitude -171.41 to +171.01, latitude -92.21 to +92.41 (aligned with map bounds)
-                // Apply inverse squeeze/offset transformation to align with full canvas
-                let x = (((settlement.lon + 171.41) / 342.42) * canvas.width - 15) / 0.97;
-                let y = (((92.41 - settlement.lat) / 184.62) * canvas.height - 15) / 0.91;
+                // Apply squeeze transformation anchored at bottom edge
+                let x = (((settlement.lon + 171.41) / 342.42) * canvas.width) / 0.985;
+                // Y squeeze anchored at bottom (squeeze down from top)
+                let normalizedLat = (92.41 - settlement.lat) / 184.62; // 0 at top, 1 at bottom
+                let y = (normalizedLat * canvas.height) / 0.9475 + 5;
                 
                 // Apply zoom and pan transformation
                 const transformed = applyInverseTransform(x, y);
@@ -424,11 +425,22 @@
                         // Convert coordinates to canvas position
                         let x1, y1, x2, y2;
                         
-                        if (layerType === 'rivers' || layerType === 'routes') {
-                            x1 = (((coord1[0] + 171.41) / 342.42) * canvas.width - 15) / 0.97;
-                            y1 = (((92.41 - coord1[1]) / 184.62) * canvas.height - 15) / 0.91;
-                            x2 = (((coord2[0] + 171.41) / 342.42) * canvas.width - 15) / 0.97;
-                            y2 = (((92.41 - coord2[1]) / 184.62) * canvas.height - 15) / 0.91;
+                        if (layerType === 'rivers') {
+                            // Rivers: match trade routes scaling + 20px offset from top
+                            x1 = (((coord1[0] + 171.41) / 342.42) * canvas.width) / 0.985;
+                            let nLat1 = (92.41 - coord1[1]) / 184.62;
+                            y1 = (nLat1 * canvas.height) / 0.9475 + 30;
+                            x2 = (((coord2[0] + 171.41) / 342.42) * canvas.width) / 0.985;
+                            let nLat2 = (92.41 - coord2[1]) / 184.62;
+                            y2 = (nLat2 * canvas.height) / 0.9475 + 30;
+                        } else if (layerType === 'routes') {
+                            // Trade routes: scaling without offset
+                            x1 = (((coord1[0] + 171.41) / 342.42) * canvas.width) / 0.985;
+                            let nLat1 = (92.41 - coord1[1]) / 184.62;
+                            y1 = (nLat1 * canvas.height) / 0.9475;
+                            x2 = (((coord2[0] + 171.41) / 342.42) * canvas.width) / 0.985;
+                            let nLat2 = (92.41 - coord2[1]) / 184.62;
+                            y2 = (nLat2 * canvas.height) / 0.9475;
                         }
                         
                         // Apply zoom and pan
@@ -492,9 +504,11 @@
                 
                 // Convert geographic coordinates to canvas coordinates
                 // Marker range: longitude -171.41 to +171.01, latitude -92.21 to +92.41 (aligned with map bounds)
-                // Apply inverse squeeze/offset transformation to align with full canvas
-                let x = (((lon + 171.41) / 342.42) * canvas.width - 15) / 0.97;
-                let y = (((92.41 - lat) / 184.62) * canvas.height - 15) / 0.91;
+                // Apply squeeze transformation anchored at bottom edge
+                let x = (((lon + 171.41) / 342.42) * canvas.width) / 0.985;
+                // Y squeeze anchored at bottom (squeeze down from top)
+                let normalizedLat = (92.41 - lat) / 184.62; // 0 at top, 1 at bottom
+                let y = (normalizedLat * canvas.height) / 0.9475 + 10;
                 
                 // Apply zoom and pan transformation
                 const transformed = applyInverseTransform(x, y);
@@ -554,19 +568,22 @@
                 let canvasXi, canvasYi, canvasXj, canvasYj;
                 
                 if (layerType === 'rivers') {
-                    // Rivers coordinate range: longitude -171.41 to +171.01, latitude -92.21 to +92.41 (aligned with map bounds)
-                    // Apply inverse squeeze/offset transformation to align with full canvas
-                    canvasXi = (((xi + 171.41) / 342.42) * canvas.width - 15) / 0.97;
-                    canvasYi = (((92.41 - yi) / 184.62) * canvas.height - 15) / 0.91;
-                    canvasXj = (((xj + 171.41) / 342.42) * canvas.width - 15) / 0.97;
-                    canvasYj = (((92.41 - yj) / 184.62) * canvas.height - 15) / 0.91;
+                    // Rivers: match trade routes scaling + 20px offset from top
+                    canvasXi = (((xi + 171.41) / 342.42) * canvas.width) / 0.985;
+                    let normalizedLatI = (92.41 - yi) / 184.62;
+                    canvasYi = (normalizedLatI * canvas.height) / 0.9475 + 30;
+                    canvasXj = (((xj + 171.41) / 342.42) * canvas.width) / 0.985;
+                    let normalizedLatJ = (92.41 - yj) / 184.62;
+                    canvasYj = (normalizedLatJ * canvas.height) / 0.9475 + 30;
                 } else if (layerType === 'routes') {
                     // Trade routes coordinate range: longitude -171.41 to +171.01, latitude -92.21 to +92.41 (aligned with map bounds)
-                    // Apply inverse squeeze/offset transformation to align with full canvas
-                    canvasXi = (((xi + 171.41) / 342.42) * canvas.width - 15) / 0.97;
-                    canvasYi = (((92.41 - yi) / 184.62) * canvas.height - 15) / 0.91;
-                    canvasXj = (((xj + 171.41) / 342.42) * canvas.width - 15) / 0.97;
-                    canvasYj = (((92.41 - yj) / 184.62) * canvas.height - 15) / 0.91;
+                    // Apply squeeze transformation anchored at bottom edge
+                    canvasXi = (((xi + 171.41) / 342.42) * canvas.width) / 0.985;
+                    let normalizedLatI = (92.41 - yi) / 184.62;
+                    canvasYi = (normalizedLatI * canvas.height) / 0.9475;
+                    canvasXj = (((xj + 171.41) / 342.42) * canvas.width) / 0.985;
+                    let normalizedLatJ = (92.41 - yj) / 184.62;
+                    canvasYj = (normalizedLatJ * canvas.height) / 0.9475;
                 } else {
                     // Polygon layers coordinate range: longitude -171.41 to +171.01, latitude -92.21 to +92.41
                     // Apply inverse squeeze/offset transformation to align with full canvas
@@ -1526,9 +1543,11 @@
             for (const settlement of metadata.burgs) {
                 // Use settlement coordinates directly (new map data should be in correct coordinate system)
                 // Settlement range: longitude -171.41 to +171.01, latitude -92.21 to +92.41 (aligned with map bounds)
-                // Apply inverse squeeze/offset transformation to align with full canvas
-                let x = (((settlement.lon + 171.41) / 342.42) * canvas.width - 15) / 0.97;
-                let y = (((92.41 - settlement.lat) / 184.62) * canvas.height - 15) / 0.91;
+                // Apply squeeze transformation anchored at bottom edge
+                let x = (((settlement.lon + 171.41) / 342.42) * canvas.width) / 0.985;
+                // Y squeeze anchored at bottom (squeeze down from top)
+                let normalizedLat = (92.41 - settlement.lat) / 184.62; // 0 at top, 1 at bottom
+                let y = (normalizedLat * canvas.height) / 0.9475 + 5;
                 
                 // Apply zoom and pan transformation
                 const transformed = applyInverseTransform(x, y);
@@ -1561,24 +1580,7 @@
                 }
             }
             
-            // Second pass: Draw only capital city names on top
-            for (const settlement of metadata.burgs) {
-                if (settlement.capital) {
-                    let x = (((settlement.lon + 171.41) / 342.42) * canvas.width - 15) / 0.97;
-                    let y = (((92.41 - settlement.lat) / 184.62) * canvas.height - 15) / 0.91;
-                    
-                    const transformed = applyInverseTransform(x, y);
-                    x = transformed.x;
-                    y = transformed.y;
-                    
-                    const radius = Math.max(6, Math.log10(settlement.population || 1000) * 2.5);
-                    
-                    // Draw capital city name
-                    ctx.fillStyle = '#ffffff';
-                    ctx.font = 'bold 14px Arial';
-                    ctx.fillText(settlement.name, x + radius + 5, y - radius - 5);
-                }
-            }
+            // Capital city labels removed
             
         }
 
@@ -1602,9 +1604,11 @@
                 
                 // Convert geographic coordinates to canvas coordinates
                 // Marker range: longitude -171.41 to +171.01, latitude -92.21 to +92.41 (aligned with map bounds)
-                // Apply inverse squeeze/offset transformation to align with full canvas
-                let x = (((lon + 171.41) / 342.42) * canvas.width - 15) / 0.97;
-                let y = (((92.41 - lat) / 184.62) * canvas.height - 15) / 0.91;
+                // Apply squeeze transformation anchored at bottom edge
+                let x = (((lon + 171.41) / 342.42) * canvas.width) / 0.985;
+                // Y squeeze anchored at bottom (squeeze down from top)
+                let normalizedLat = (92.41 - lat) / 184.62; // 0 at top, 1 at bottom
+                let y = (normalizedLat * canvas.height) / 0.9475 + 10;
                 
                 // Apply zoom and pan transformation
                 const transformed = applyInverseTransform(x, y);
@@ -1727,14 +1731,6 @@
                 ctx.arc(x, y, 12, 0, 2 * Math.PI);
                 ctx.fill();
                 ctx.stroke();
-                
-                // Draw marker name for important markers
-                if (type === 'battlefields' || type === 'dungeons' || type === 'mines') {
-                    ctx.fillStyle = '#ffffff';
-                    ctx.font = 'bold 10px Arial';
-                    ctx.textAlign = 'center';
-                    ctx.fillText(marker.properties.name, x, y + 20);
-                }
             }
         }
 
@@ -1972,15 +1968,16 @@
                 let x, y;
                 
                 if (layerType === 'rivers') {
-                    // Rivers coordinate range: longitude -171.41 to +171.01, latitude -92.21 to +92.41 (aligned with map bounds)
-                    // Apply inverse squeeze/offset transformation to align with full canvas
-                    x = (((coordinates[i][0] + 171.41) / 342.42) * canvas.width - 15) / 0.97;
-                    y = (((92.41 - coordinates[i][1]) / 184.62) * canvas.height - 15) / 0.91;
+                    // Rivers: match trade routes scaling + 20px offset from top
+                    x = (((coordinates[i][0] + 171.41) / 342.42) * canvas.width) / 0.985;
+                    let normalizedLat = (92.41 - coordinates[i][1]) / 184.62;
+                    y = (normalizedLat * canvas.height) / 0.9475 + 30;
                 } else if (layerType === 'routes') {
                     // Trade routes coordinate range: longitude -171.41 to +171.01, latitude -92.21 to +92.41 (aligned with map bounds)
-                    // Apply inverse squeeze/offset transformation to align with full canvas
-                    x = (((coordinates[i][0] + 171.41) / 342.42) * canvas.width - 15) / 0.97;
-                    y = (((92.41 - coordinates[i][1]) / 184.62) * canvas.height - 15) / 0.91;
+                    // Apply squeeze transformation anchored at bottom edge
+                    x = (((coordinates[i][0] + 171.41) / 342.42) * canvas.width) / 0.985;
+                    let normalizedLat = (92.41 - coordinates[i][1]) / 184.62;
+                    y = (normalizedLat * canvas.height) / 0.9475;
                 } else {
                     // Polygon layers coordinate range: longitude -171.41 to +171.01, latitude -92.21 to +92.41
                     // Apply inverse squeeze/offset transformation to align with full canvas
